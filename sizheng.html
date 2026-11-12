@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>思政选择题 · 在线做题</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+  --primary: #c62828;
+  --primary-light: #fbeaea;
+  --green: #2e7d32;
+  --green-bg: #e8f5e9;
+  --red: #c62828;
+  --red-bg: #fdecea;
+  --gray: #9e9e9e;
+  --gray-bg: #f5f5f5;
+  --text: #263238;
+  --text2: #607d8b;
+  --border: #e0e0e0;
+  --bg: #f0f2f5;
+  --radius: 14px;
+}
+html, body { height: 100%; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+#app { max-width: 760px; margin: 0 auto; padding: 16px 14px 100px; }
+
+/* 顶栏 */
+.topbar {
+  position: sticky; top: 0; z-index: 50;
+  background: linear-gradient(135deg, #b71c1c, #d32f2f);
+  color: #fff; border-radius: 0 0 18px 18px;
+  padding: 14px 18px; margin: 0 -14px 16px;
+  box-shadow: 0 4px 16px rgba(183,28,28,.35);
+}
+.topbar h1 { font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+.topbar .sub { font-size: 12px; opacity: .85; margin-top: 2px; }
+.topbar .back {
+  position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,.18); color: #fff; border: none;
+  padding: 7px 16px; border-radius: 20px; font-size: 13px; cursor: pointer;
+}
+.topbar .back:hover { background: rgba(255,255,255,.3); }
+
+/* 首页 */
+.hero {
+  background: #fff; border-radius: var(--radius);
+  padding: 28px 22px; text-align: center; margin-bottom: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+.hero .big { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+.hero .big em { font-style: normal; color: var(--primary); }
+.stat-row { display: flex; justify-content: center; gap: 26px; margin: 18px 0 6px; flex-wrap: wrap; }
+.stat-row .st { min-width: 78px; }
+.stat-row .st b { display: block; font-size: 22px; color: var(--primary); }
+.stat-row .st span { font-size: 12px; color: var(--text2); }
+.filter-box { background: #fff; border-radius: var(--radius); padding: 16px 18px; margin-bottom: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+.filter-box .label { font-size: 13px; color: var(--text2); margin-bottom: 10px; }
+.chips { display: flex; gap: 10px; flex-wrap: wrap; }
+.chip {
+  border: 1.5px solid var(--border); background: #fff; color: var(--text);
+  border-radius: 22px; padding: 8px 18px; font-size: 14px; cursor: pointer; transition: all .15s;
+  font-family: inherit;
+}
+.chip.on { border-color: var(--primary); background: var(--primary); color: #fff; }
+.mode-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.mode-card {
+  background: #fff; border-radius: var(--radius); border: none; cursor: pointer;
+  padding: 20px 16px; text-align: left; box-shadow: 0 2px 12px rgba(0,0,0,.06);
+  transition: transform .12s, box-shadow .12s; position: relative; font-family: inherit;
+}
+.mode-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,.1); }
+.mode-card .ic { font-size: 26px; }
+.mode-card .t { font-size: 16px; font-weight: 700; margin: 6px 0 2px; }
+.mode-card .d { font-size: 12px; color: var(--text2); }
+.mode-card.full { grid-column: 1 / -1; }
+.mode-card:disabled { opacity: .45; cursor: not-allowed; }
+.mode-card:disabled:hover { transform: none; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+.mode-card .cnt { position: absolute; right: 14px; top: 16px; background: var(--primary-light); color: var(--primary); border-radius: 14px; font-size: 12px; padding: 2px 10px; font-weight: 700; }
+.foot-tools { text-align: center; margin-top: 22px; }
+.foot-tools button {
+  background: none; border: none; color: var(--text2); font-size: 13px;
+  cursor: pointer; padding: 8px 14px; text-decoration: underline; font-family: inherit;
+}
+
+/* 做题区 */
+.progress-wrap { background: #fff; border-radius: var(--radius); padding: 12px 16px; margin-bottom: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+.progress-line { height: 8px; background: var(--gray-bg); border-radius: 4px; overflow: hidden; }
+.progress-line i { display: block; height: 100%; background: linear-gradient(90deg, #d32f2f, #ef6292); border-radius: 4px; transition: width .3s; }
+.progress-text { display: flex; justify-content: space-between; font-size: 12px; color: var(--text2); margin-top: 8px; flex-wrap: wrap; gap: 4px; }
+.progress-text label { cursor: pointer; user-select: none; }
+
+.qcard {
+  background: #fff; border-radius: var(--radius); padding: 22px 20px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06); margin-bottom: 12px;
+  animation: fadeIn .25s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.qhead { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.qno { font-size: 13px; color: var(--text2); }
+.badge { font-size: 12px; font-weight: 700; padding: 2px 10px; border-radius: 10px; }
+.badge.single { background: #e3f2fd; color: #1565c0; }
+.badge.multi  { background: #fff3e0; color: #e65100; }
+.badge.judge  { background: #ede7f6; color: #5e35b1; }
+.qtext { font-size: 17px; font-weight: 600; margin-bottom: 18px; word-break: break-word; }
+
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt {
+  display: flex; align-items: flex-start; gap: 12px;
+  border: 2px solid var(--border); border-radius: 12px;
+  padding: 13px 16px; cursor: pointer; background: #fff;
+  transition: border-color .12s, background .12s, transform .08s;
+  font-size: 15px; text-align: left; width: 100%;
+  font-family: inherit; line-height: 1.55; color: var(--text);
+}
+.opt:active { transform: scale(.99); }
+.opt .key {
+  flex: none; width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--gray-bg); color: var(--text2);
+  font-weight: 700; font-size: 14px; margin-top: 1px;
+}
+.opt:not(.locked):hover { border-color: #bdbdbd; }
+.opt.picked { border-color: var(--primary); background: var(--primary-light); }
+.opt.picked .key { background: var(--primary); color: #fff; }
+.opt.correct { border-color: var(--green); background: var(--green-bg); }
+.opt.correct .key { background: var(--green); color: #fff; }
+.opt.wrong { border-color: var(--red); background: var(--red-bg); }
+.opt.wrong .key { background: var(--red); color: #fff; }
+.opt.locked { cursor: default; }
+.opt.tf { justify-content: center; font-size: 17px; font-weight: 700; padding: 16px; }
+.opt.tf .key { margin: 0; }
+.opts.two { flex-direction: row; }
+.opts.two .opt { justify-content: center; }
+
+.feedback { margin-top: 16px; border-radius: 12px; padding: 14px 16px; font-size: 14px; animation: fadeIn .2s ease; }
+.feedback.ok { background: var(--green-bg); color: var(--green); }
+.feedback.no { background: var(--red-bg); color: var(--red); }
+.feedback b { font-size: 15px; }
+.feedback .ans { margin-top: 4px; }
+.feedback .note { margin-top: 8px; font-size: 12px; color: #b26a00; background: #fff8e1; border-radius: 8px; padding: 6px 10px; }
+
+.multi-confirm {
+  margin-top: 16px; width: 100%; border: none; border-radius: 12px;
+  background: var(--primary); color: #fff; font-size: 16px; font-weight: 700;
+  padding: 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(198,40,40,.3);
+  font-family: inherit;
+}
+.multi-confirm:disabled { background: var(--gray); box-shadow: none; cursor: not-allowed; }
+.multi-tip { text-align: center; color: var(--text2); font-size: 12px; margin-top: 8px; }
+
+/* 底部操作 */
+.navbar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 60;
+  background: #fff; box-shadow: 0 -2px 16px rgba(0,0,0,.08);
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+}
+.navbar .inner { max-width: 760px; margin: 0 auto; display: flex; gap: 10px; align-items: stretch; }
+.navbar button {
+  flex: 1; border: none; border-radius: 12px; padding: 13px 0;
+  font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+}
+.btn-prev { background: var(--gray-bg); color: var(--text); flex: 0 0 100px !important; }
+.btn-next { background: var(--primary); color: #fff; flex: 1.6 !important; }
+.btn-mid { background: #fff; color: var(--text2); border: 1.5px solid var(--border) !important; flex: 0 0 92px !important; font-size: 13px !important; font-weight: 600 !important; }
+
+/* 答题卡 */
+.palette-mask {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 70;
+  display: none; align-items: flex-end;
+}
+.palette-mask.show { display: flex; }
+.palette {
+  background: #fff; width: 100%; max-width: 760px; margin: 0 auto;
+  border-radius: 18px 18px 0 0; padding: 20px 18px 30px;
+  max-height: 70vh; overflow-y: auto;
+}
+.palette h3 { font-size: 15px; margin-bottom: 4px; }
+.palette .lgd { display: flex; gap: 14px; font-size: 12px; color: var(--text2); margin-bottom: 14px; flex-wrap: wrap; }
+.lgd i { display: inline-block; width: 12px; height: 12px; border-radius: 4px; margin-right: 4px; vertical-align: -1px; }
+.pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 8px; }
+.pcell {
+  height: 42px; border-radius: 10px; border: 1.5px solid var(--border);
+  background: #fff; font-size: 14px; font-weight: 700; cursor: pointer; color: var(--text);
+  font-family: inherit;
+}
+.pcell.ok { background: var(--green-bg); border-color: #a5d6a7; color: var(--green); }
+.pcell.no { background: var(--red-bg); border-color: #ef9a9a; color: var(--red); }
+.pcell.done { background: #e3f2fd; border-color: #90caf9; color: #1565c0; }
+.pcell.cur { outline: 3px solid #d32f2f; outline-offset: 1px; }
+
+/* 成绩页 */
+.result-hero {
+  background: #fff; border-radius: var(--radius); padding: 34px 20px;
+  text-align: center; margin-bottom: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+.score-ring {
+  width: 150px; height: 150px; margin: 0 auto 14px; border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: conic-gradient(var(--rc, #e53935) calc(var(--p, 0) * 1%), #eceff1 0);
+  position: relative;
+}
+.score-ring::before {
+  content: ""; position: absolute; inset: 11px; background: #fff; border-radius: 50%;
+}
+.score-ring .v { position: relative; font-size: 38px; font-weight: 800; color: var(--rc, #e53935); }
+.score-ring .u { position: relative; font-size: 12px; color: var(--text2); }
+.result-stats { display: flex; justify-content: center; gap: 30px; margin-top: 8px; flex-wrap: wrap; }
+.result-stats .st b { display: block; font-size: 20px; }
+.result-stats .st span { font-size: 12px; color: var(--text2); }
+.result-stats .st.gb b { color: var(--green); }
+.result-stats .st.rb b { color: var(--red); }
+
+.review-list { display: flex; flex-direction: column; gap: 10px; }
+.rv-item {
+  background: #fff; border-radius: 12px; padding: 16px 18px;
+  box-shadow: 0 1px 8px rgba(0,0,0,.05); border-left: 4px solid #ef9a9a;
+}
+.rv-item .rvq { font-size: 14px; font-weight: 600; margin-bottom: 8px; word-break: break-word; }
+.rv-item .rvl { font-size: 13px; margin-top: 4px; }
+.rv-item .ok { color: var(--green); font-weight: 600; }
+.rv-item .no { color: var(--red); font-weight: 600; }
+.rv-item .rv-opt { color: var(--text2); font-size: 13px; margin-top: 3px; white-space: pre-line; }
+
+.empty { text-align: center; color: var(--text2); padding: 60px 20px; font-size: 14px; }
+.empty .eic { font-size: 44px; margin-bottom: 10px; }
+
+@media (max-width: 480px) {
+  .mode-list { grid-template-columns: 1fr; }
+  .qtext { font-size: 16px; }
+  .opts.two { flex-direction: column; }
+}
+@media (min-width: 761px) { body { padding-bottom: 110px; } }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+const QUESTIONS = [{"no":1,"type":"single","question":"马克思主义中国化时代化的最新成果是( )。","options":["A. 习近平新时代中国特色社会主义思想","B. 毛泽东思想","C. 邓小平理论","D. “三个代表”重要思想"],"answer":"A","note":null},{"no":2,"type":"single","question":"( )是近代以来中国人民的共同梦想，是中国共产党人矢志不渝的奋斗目标。","options":["A. 建立共产主义社会","B. 诚实劳动争取美好生活","C. 建立人民当家作主的国家政权","D. 实现中华民族伟大复兴"],"answer":"D","note":null},{"no":3,"type":"single","question":"( )正成为21世纪科学社会主义发展的旗帜，成为振兴世界社会主义的中流砥柱。","options":["A. 中国特色社会主义思想","B. 中国特色社会主义制度","C. 马克思列宁主义","D. 中国特色社会主义"],"answer":"D","note":null},{"no":4,"type":"single","question":"党的十八大以来，以习近平同志为核心的党中央团结带领全党全国各族人民,坚持以（  ）全面推进中华民族伟大复兴。","options":["A. 中国特色社会主义","B. 党的创新理论","C. 实现共同富裕","D. 中国式现代化"],"answer":"D","note":null},{"no":5,"type":"multi","question":"( )决定了中国必然走适合自己特点的现代化道路。","options":["A. 独特的文化传统","B. 独特的地缘环境","C. 独特的历史命运","D. 独特的基本国情"],"answer":"ACD","note":null},{"no":6,"type":"multi","question":"习近平新时代中国特色社会主义思想,正是在对( )的深邃思考、深刻总结，对( )的不懈探索、砥砺前行中创立并不断丰富发展的。","options":["A. 科学社会主义理论与实践","B. 坚持和发展中国特色社会主义","C. 马克思主义中国化时代化","D. 社会主义改革开放"],"answer":"AB","note":null},{"no":7,"type":"multi","question":"习近平新时代中国特色社会主义思想，正是在党不断实现(  )，以伟大自我革命引领伟大社会革命的过程中创立并不断丰富发展的。","options":["A. 自我净化","B. 自我完善","C. 自我革新","D. 自我提高"],"answer":"ABCD","note":null},{"no":8,"type":"single","question":"我们推进马克思主义中国化时代化根本途径是（ B ）。","options":["A. 坚持马克思主义","B. “两个结合”","C. 继承和发展中华优秀传统文化","D. 发展马克思主义"],"answer":"B","note":null},{"no":9,"type":"single","question":"(   )第一次系统阐述马克思主义基本原理同中国具体实际相结合的一系列重大问题,并提出要使马克思主义具有民族形式。","options":["A. 毛泽东","B. 邓小平","C. 胡锦涛","D. 习近平"],"answer":"A","note":null},{"no":10,"type":"multi","question":"习近平新时代中国特色社会主义思想是马克思主义基本原理同( ) 相结合的重大成果，是坚持“两个结合”的光辉典范。","options":["A. 广大人民群众","B. 中国具体实际","C. 世界共产主义","D. 中华优秀传统文化"],"answer":"BD","note":null},{"no":11,"type":"multi","question":"马克思主义能不能在实践中发挥作用，关键在于能否(   )。","options":["A. 把马克思主义基本原理同中国实际和时代特征结合起来","B. 运用其科学的世界观和方法论解决中国的问题","C. 运用其科学的世界观和方法论解决当今世界的问题","D. 熟记马克思主义基本观点"],"answer":"AB","note":null},{"no":12,"type":"single","question":"( )是习近平新时代中国特色社会主义思想的世界观、方法论和贯穿其中的立场观点方法的重要体现。","options":["A. “十四个坚持”","B. “十个明确”","C. “十三个方面成就”","D. “六个必须坚持”"],"answer":"D","note":null},{"no":13,"type":"single","question":"( )是习近平新时代中国特色社会主义思想的主体内容，集中体现了这一思想体系的主要观点和基本精神，构成了这一思想体系的四梁八柱，发挥着统摄作用。","options":["A. “十个明确”","B. “十四个坚持”","C. “六个必须坚持”","D. “十三个方面成就”"],"answer":"A","note":null},{"no":14,"type":"single","question":"中国特色社会主义最本质的特征是( )。","options":["A. 全心全意为人民服务","B. 中国共产党领导","C. 实行人民民主专政","D. 依法治国"],"answer":"B","note":null},{"no":15,"type":"single","question":"坚持(  )是根本价值立场，体现了历史唯物主义群众史观。","options":["A. 社会主义","B. 人民当家作主","C. 人民至上","D. 中国特色社会主义"],"answer":"C","note":null},{"no":16,"type":"single","question":"(  )是中国共产党人的境界格局，体现了马克思主义追求人类进步和解放的崇高理想。","options":["A. 坚持胸怀天下","B. 坚持守正创新","C. 坚持问题导向","D. 坚持系统观念"],"answer":"A","note":null},{"no":17,"type":"single","question":"党的二十大提出了(  )。","options":["A. “六个必须坚持”","B. “十个明确”","C. “十四个坚持”","D. “十三个方面成就”"],"answer":"A","note":null},{"no":18,"type":"single","question":"坚持和发展中国特色社会主义，总任务是( )。","options":["A. 全面建成小康社会","B. 全面实施乡村振兴战略","C. 实现社会主义现代化和中华民族伟大复兴","D. 全面从严治党"],"answer":"C","note":null},{"no":19,"type":"multi","question":"新发展理念是指( )。","options":["A. 创新","B. 协调","C. 绿色","D. 开放","E. 共享"],"answer":"ABCDE","note":null},{"no":20,"type":"multi","question":"党在新时代的强军目标是建设一支( )的人民军队。","options":["A. 听党指挥","B. 作风优良","C. 纪律严明","D. 能打胜仗"],"answer":"ABD","note":null},{"no":21,"type":"multi","question":"中国共产党是最高政治领导力量，全党必须( )。","options":["A. 增强“四个意识”","B. 坚定“四个自信”","C. 做到“两个维护”","D. 坚持“高质量发展”"],"answer":"ABC","note":null},{"no":22,"type":"multi","question":"习近平新时代中国特色社会主义思想，从理论和实践的结合上科学回答了( )等重大时代课题，以崭新的思想内容丰富发展了马克思主义，形成了完整的科学体系。","options":["A. 新时代坚持和发展什么样的中国特色社会主义、怎样坚持和发展中国特色社会主义","B. 建设什么样的社会主义现代化强国、怎样建设社会主义现代化强国","C. 建设什么样的长期执政的马克思主义政党、怎样建设长期执政的马克思主义政党","D. 新时代坚持和发展什么样的社会主义、怎样坚持和发展社会主义"],"answer":"ABC","note":null},{"no":23,"type":"multi","question":"习近平新时代中国特色社会主义思想内涵十分丰富，党的十九大、十九届六中全会提出的( )概括了习近平新时代中国特色社会主义思想的主要内容。","options":["A. “十个明确”","B. “十四个坚持”","C. “十三个方面成就”","D. “六个必须坚持”"],"answer":"ABC","note":null},{"no":24,"type":"single","question":"习近平新时代中国特色社会主义思想，是全党全国各族人民为实现中华民族伟大复兴而奋斗的( ),是新时代党和国家事业发展的( )。","options":["A. 根本遵循 思想旗帜","B. 行动指南 根本遵循","C. 思想旗帜 行动指南","D. 根本遵循 行动指南"],"answer":"B","note":null},{"no":25,"type":"single","question":"党的( )着眼中国特色社会主义事业长远发展，把习近平新时代中国特色社会主义思想确立为党必须长期坚持的指导思想并庄严地写入党章，实现了党的指导思想的与时俱进。","options":["A. 十七大","B. 十八大","C. 十九大","D. 二十大"],"answer":"C","note":null},{"no":26,"type":"single","question":"2018年3月，(  )通过的宪法修正案，郑重地把习近平新时代中国特色社会主义思想载入宪法。","options":["A. 十三届全国人大一次会议","B. 十三届全国人大二次会议","C. 十四届全国人大一次会议","D. 十三届全国人大三次会议"],"answer":"A","note":null},{"no":27,"type":"multi","question":"习近平新时代中国特色社会主义思想以全新的视野深化了对( )的 认识。","options":["A. 治乱兴衰周期规律","B. 共产党执政规律","C. 社会主义建设规律","D. 人类社会发展规律"],"answer":"BCD","note":null},{"no":28,"type":"multi","question":"习近平新时代中国特色社会主义思想是当代中国马克思主义、二十一世纪马克思主义，是(     )的时代精华，实现了马克思主义中国化新的飞跃。","options":["A. 中华文化","B. 中国精神","C. 中华品格","D. 中国力量"],"answer":"AB","note":null},{"no":29,"type":"single","question":"新时代的伟大实践充分证明，( )是新时代党和国按业取得历史性成就、发生历史性变革的决定性因素，是党和人民应对一切不确宁业的是大确定 性、最大底气、最大保证。","options":["A. “四个意识”","B. “四个自信”","C. “两个确立”","D. “两个维护”"],"answer":"C","note":null},{"no":30,"type":"multi","question":"“两个确立”是指( ),反映了全党全军全国各族人民共同心愿。","options":["A. 确立习近平同志党中央的核心、全党的核心地位","B. 确立习近平新时代中国特色社会主义思想的指导地位","C. 确立习近平同志党中央的核心地位","D. 确立了党的十八大以来党和国家取得历史性成就、发生历史性变革"],"answer":"AB","note":null},{"no":31,"type":"multi","question":"开设“习近平新时代中国特色社会主义思想概论”课程，目的是帮助大学生系统掌握习近平新时代中国特色社会主义思想的主要内容和科学体系，把握这一思想的世界观、方法论和贯穿其中的立场观点方法，增进( ),切实做到学思用贯通、知信行统一。","options":["A. 政治认同","B. 思想认同","C. 理论认同","D. 情感认同"],"answer":"ABCD","note":null},{"no":32,"type":"single","question":"实现( )是近代以来中国人民的共同梦想，是中国共产党矢志不渝的奋斗目标。","options":["A. 国家富强","B. 中华民族伟大复兴","C. 人民幸福","D. 民族振兴"],"answer":"B","note":null},{"no":33,"type":"single","question":"(  )，正是在中华民族迎来从站起来、富起来到强起来的伟大飞跃，实现中华民族伟大复兴进入不可逆转的历史进程中创立并不断丰富发展的。","options":["A. 习近平新时代中国特色社会主义思想","B. 毛泽东思想","C. 邓小平理论","D. 科学发展观"],"answer":"A","note":null},{"no":34,"type":"single","question":"中国特色社会主义正成为(   )发展的旗帜，成为振兴世界社会主义的中流砥柱。","options":["A. 20世纪世界社会主义","B. 20世纪科学社会主义","C. 21世纪世界社会主义","D. 21世纪科学社会主义"],"answer":"D","note":null},{"no":35,"type":"single","question":"治理好我们这个大党和大国，必须坚持党的全面领导特别是党中央集中统一领导，发扬党的( )精神，解决好大党独有难题。","options":["A. 自我革命","B. 自我净化","C. 自我革新","D. 自我提高"],"answer":"A","note":null},{"no":36,"type":"single","question":"(  )是我们党在探索中国特色社会主义道路中得出的规律性认识，是我们取得成功的最大法宝。","options":["A. 党的建设","B. “两个结合”","C. 武装斗争","D. 统一战线"],"answer":"B","note":null},{"no":37,"type":"single","question":"习近平总结党百年来的理论创新经验，在强调坚持(  )的基础上，明确提出把马克思主义基本原理同中华优秀传统文化相结合的重大命题，这是又一次的思想解放。","options":["A. 党的自我革命","B. “两个大局”","C. 中国式现代化","D. “第一个结合”"],"answer":"D","note":null},{"no":38,"type":"single","question":"习近平新时代中国特色社会主义思想坚持把马克思主义基本原理同(  )相结合，用马克思主义之“矢”去射新时代中国之“的”。","options":["A. 中华优秀传统文化","B. 中国具体实际","C. 社会主义初级阶段","D. 科学社会主义"],"answer":"B","note":null},{"no":39,"type":"single","question":"习近平新时代中国特色社会主义思想坚持把马克思主义基本原理同(  )相结合，不断夯实马克思主义中国化时代化的历史基础和群众基础。","options":["A. 中华优秀传统文化","B. 中国具体实际","C. 社会主义初级阶段","D. 科学社会主义"],"answer":"A","note":null},{"no":40,"type":"single","question":"党的二十大提出的( )，是习近平新时代中国特色社会主义思想的世界观、方法论和贯穿其中的立场观点方法的重要体现。","options":["A. “十个明确”","B. “十四个坚持”","C. “十三个方面成就”","D. “六个必须坚持”"],"answer":"D","note":null},{"no":41,"type":"single","question":"中国特色社会主义最本质的特征是( )。","options":["A. 人民共同富裕","B. 人民当家作主","C. 中国共产党领导","D. 社会主义现代化"],"answer":"C","note":null},{"no":42,"type":"single","question":"(  )是习近平新时代中国特色社会主义思想的主体内容，集中体现了这一思想体系的主要观点和基本精神，构成了这一思想体系的四梁八柱，发挥着统摄作用。","options":["A. “十个明确”","B. “十四个坚持”","C. “十三个方面成就”","D. “六个必须坚持”"],"answer":"A","note":null},{"no":43,"type":"single","question":"(   )是习近平新时代中国特色社会主义思想的重要组成部分，是在治国理政各方面作出的理论分析和政策指导，构成了新时代坚持和发展中国特色社会主义的基本方略。","options":["A. “十个明确”","B. “十四个坚持”","C. “十三个方面成就”","D. “六个必须坚持”"],"answer":"B","note":null},{"no":44,"type":"single","question":"习近平新时代中国特色社会主义思想继承和发展马克思列宁主义、毛泽东思想、邓小平理论、“三个代表”重要思想、科学发展观，是马克思主义在当代中国发展的最新理论成果，开辟了(   )。","options":["A. 马克思主义中国化时代化国际化新境界","B. 马克思主义中国化时代化新境界","C. 马克思主义中国化国际化新境界","D. 马克思主义时代化国际化新境界"],"answer":"B","note":null},{"no":45,"type":"single","question":"习近平新时代中国特色社会主义思想是当代中国马克思主义、二十一世纪马克思主义，是中华文化和中国精神的时代精华，实现了马克思主义中国化时代化(        )。","options":["A. 第一次飞跃","B. 第二次飞跃","C. 第三次飞跃","D. 新的飞跃"],"answer":"D","note":null},{"no":46,"type":"single","question":"习近平新时代中国特色社会主义思想，是全党全国各族人民为实现中华民族伟大复兴而奋斗的行动指南，是新时代党和国家事业发展的(        )。","options":["A. 根本遵循","B. 四梁八柱","C. 总体布局","D. 战略全局"],"answer":"A","note":null},{"no":47,"type":"single","question":"(   )着眼中国特色社会主义事业长远发展，把习近平新时代中国特色社会主义思想确立为党必须长期坚持的指导思想并庄严地写入党章，实现了党的指导思想的与时俱进。","options":["A. 十三届全国人大一次会议","B. 党的十九大","C. 党的十八大","D. 党的二十大"],"answer":"B","note":null},{"no":48,"type":"single","question":"新时代的伟大变革，是在以习近平同志为核心的党中央坚强领导下、在(  )指引下全党全军全国各族人民团结奋斗取得的。","options":["A. 毛泽东思想","B. 邓小平理论","C. “三个代表”重要思想及科学发展观","D. 习近平新时代中国特色社会主义思想"],"answer":"D","note":null},{"no":49,"type":"single","question":"新时代的伟大实践充分证明，(  )是新时代党和国家事业取得历史性成就、发生历史性变革的决定性因素，是党和人民应对一切不确定性的最大确定性、最大底气、最大保证。","options":["A. “两个确立”","B. “十个明确”","C. “十四个坚持”","D. “六个必须坚持”"],"answer":"A","note":null},{"no":50,"type":"single","question":"(  )已经写在了新时代的伟大征程上、写在了全党全军全国各族人民的心坎上，必须倍加珍惜、坚定维护、长期坚持。","options":["A. “两个结合”","B. “六个必须坚持”","C. “两个确立”","D. “十个明确”"],"answer":"C","note":null},{"no":51,"type":"single","question":"以下不是学好用好习近平新时代中国特色社会主义思想的着力点的是(   )【P12-13】","options":["A. 坚定理想信念","B. 提高理论水平","C. 增强实践能力","D. 多读经典少实践"],"answer":"D","note":null},{"no":52,"type":"multi","question":"以下属于习近平新时代中国特色社会主义思想创立时代背景的是(  )。【P1-2】","options":["A. 世界百年未有之大变局加速演进","B. 中华民族伟大复兴进入关键时期","C. 我国经济高速度发展","D. 中国成为世界领导角色"],"answer":"AB","note":null},{"no":53,"type":"multi","question":"(  )，决定了中国必然走适合自己特点的现代化道路。【P2-3】","options":["A. 独特的发展方式","B. 独特的文化传统","C. 独特的历史命运","D. 独特的基本国情"],"answer":"BCD","note":null},{"no":54,"type":"multi","question":"习近平新时代中国特色社会主义思想是马克思主义基本原理( )的重大成果，是坚持“两个结合”的光辉典范。","options":["A. 同中国具体实际相结合","B. 同中华优秀传统文化相结合","C. 治国理政新理念新思想新战略","D. 马克思主义基本原理的创新"],"answer":"AB","note":null},{"no":55,"type":"multi","question":"习近平新时代中国特色社会主义思想坚持(   )，一切从实际出发，着眼解决新时代改革开放和中国式现代化建设的实际问题，不断回答中国之问、世界之问、人民之问、时代之问，作出符合中国实际和时代要求的正确回答，得出符合客观规律的科学认识，是最现实、最鲜活的中国化时代化的马克思主义。","options":["A. 解放思想","B. 实事求是","C. 与时俱进","D. 求真务实"],"answer":"ABCD","note":null},{"no":56,"type":"multi","question":"习近平新时代中国特色社会主义思想回答了(   )等重大时代课题。","options":["A. 新时代坚持和发展什么样的中国特色社会主义、怎样坚持和发展中国特色社会主义","B. 建设什么样的社会主义现代化强国、怎样建设社会主义现代化强国","C. 建设什么样的长期执政的马克思主义政党、怎样建设长期执政的马克思主义政党","D. 建设什么美好的世界、怎样建设美好世界"],"answer":"ABC","note":null},{"no":57,"type":"multi","question":"习近平新时代中国特色社会主义思想内涵十分丰富，党的十九大、十九届六中全会提出的(   )概括了习近平新时代中国特色社会主义思想的主要内容。","options":["A. “十个明确”","B. “十四个坚持”","C. “十三个方面成就”","D. “六个必须坚持”"],"answer":"ABC","note":null},{"no":58,"type":"multi","question":"“两个确立”是指(   )，反映了全党全军全国各族人民共同心愿。","options":["A. 确立中国共产党的领导","B. 确立中华民族伟大复兴的目标","C. 确立习近平同志党中央的核心、全党的核心地位","D. 确立习近平新时代中国特色社会主义思想的指导地位"],"answer":"CD","note":null},{"no":59,"type":"multi","question":"新时代新征程上把中国特色社会主义事业推向前进，必须( )，确保全党团结统一和行动一致，凝聚起万众一心、砥砺前行的磅礴力量。","options":["A. 深刻领悟“两个确立”的决定性意义","B. 增强“四个意识”","C. 坚定“四个自信”","D. 做到“两个维护”"],"answer":"ABCD","note":null},{"no":60,"type":"multi","question":"“六个必须坚持”相互联系、彼此支撑，贯通了( )，赋予了马克思主义世界观和方法论以新的时代内涵，彰显了习近平新时代中国特色社会主义思想的理论品格和鲜明特征。","options":["A. 认识论和实践论","B. 马克思主义基本原理","C. 唯物论和辩证法","D. 真理论和价值论"],"answer":"ACD","note":null},{"no":61,"type":"multi","question":"习近平新时代中国特色社会主义思想是( )的科学指引，是我们应对各种风险挑战、战胜一切艰难险阻的根本指针、是全党全国各族人民团结奋斗、勇毅前行创造新的历史伟业的精神旗帜。","options":["A. 实现站起来、富起来","B. 全面建成社会主义现代化强国","C. 以中国式现代化全面推进中华民族伟大复兴","D. 推进经济快速发展"],"answer":"BC","note":null},{"no":62,"type":"judge","question":"自我革命是新时代中国共产党找到的跳出治乱兴衰历史周期率的第一个答案。( )","options":[],"answer":"错","note":null},{"no":63,"type":"judge","question":"习近平新时代中国特色社会主义思想，是党和人民实践经验和集体智慧的结晶，主要创立者是习近平。(   )","options":[],"answer":"对","note":null},{"no":64,"type":"judge","question":"把马克思主义基本原理同中华优秀传统文化相结合是“两个结合”中的“第一个结合”。(     )","options":[],"answer":"错","note":null},{"no":65,"type":"judge","question":"把马克思主义基本原理同中国具体实际相结合，必须推进实践基础上的理论创新，在实践中发现真理、发展真理，用实践来实现真理、检验真理。(    )","options":[],"answer":"对","note":null},{"no":66,"type":"judge","question":"坚持人民至上是根本价值立场，体现了历史唯物主义群众史观。(   )","options":[],"answer":"对","note":null},{"no":67,"type":"judge","question":"坚持自信自立是中国共产党人的境界格局，体现了马克思主义追求人类进步和解放的崇高理想。(   )","options":[],"answer":"错","note":null},{"no":68,"type":"judge","question":"坚强的领导核心和科学的理论指导是关乎党和国家前途命运、党和人民事业成败的根本性问题。(        )","options":[],"answer":"对","note":null},{"no":69,"type":"judge","question":"习近平新时代中国特色社会主义思想深刻揭示了中华文明的突出特性、精神特质，深化了对中华文明发展规律的认识，具有强大的历史穿透力、文化感染力和精神感召力，为建设中华民族现代文明、创造人类文明新形态提供了思想指引和精神动力。(      )","options":[],"answer":"对","note":null},{"no":70,"type":"judge","question":"新时代的伟大实践充分证明，“两个结合”是新时代党和国家事业取得历史性成就、发生历史性变革的决定性因素。(    )","options":[],"answer":"错","note":null},{"no":71,"type":"judge","question":"学习习近平新时代中国特色社会主义思想要同学习马克思主义基本原理贯通起来，同学习党史、新中国史、改革开放史、社会主义发展史、中华民族发展史结合起来，做到知其言更知其义、知其然更知其所以然。(  )","options":[],"answer":"对","note":null},{"no":72,"type":"single","question":"(   )是党和人民历经千辛万苦、付出巨大代价取得的根本成就，是实现中华民族伟大复兴的必由之路。","options":["A. 改革开放","B. 中国特色社会主义","C. 社会主义现代化","D. 中国式现代化"],"answer":"B","note":null},{"no":73,"type":"single","question":"(  )一声炮响，使中国先进分子看到了一条崭新的道路，燃起了实现民族独立和人民解放的新希望。1","options":["A. 五四运动","B. 辛亥革命","C. 新文化运动","D. 十月革命"],"answer":"D","note":null},{"no":74,"type":"single","question":"(  )是人类历史上的伟大创造，也是人类自我解放的伟大觉醒。","options":["A. 科学社会主义","B. 唯物史观","C. 社会主义革命","D. 中国特色社会主义"],"answer":"A","note":null},{"no":75,"type":"single","question":"(  )是更基础、更广泛、更深厚的自信，是一个国家、一个民族发展中最基本、最深沉、最持久的力量","options":["A. 道路自信","B. 理论自信","C. 制度自信","D. 文化自信"],"answer":"D","note":null},{"no":76,"type":"single","question":"中国共产党为什么能，中国特色社会主义为什么好，归根到底是马克思主义行，是(  )。","options":["A. 中国化时代化的马克思主义行","B. 中国式现代化行","C. 中华民族伟大复兴战略行","D. 人类社会发展规律行"],"answer":"A","note":null},{"no":77,"type":"single","question":"( )是关系党的事业兴衰成败第一位的问题。","options":["A. 制度问题","B. 法治问题","C. 道路问题","D. 改革问题"],"answer":"C","note":null},{"no":78,"type":"single","question":"( )是马克思主义的核心内容。","options":["A. 科学社会主义基本原则","B. 科学社会主义基本内容","C. 科学社会主义主要内容","D. 科学社会主义主要原则"],"answer":"A","note":null},{"no":79,"type":"multi","question":"习近平指出:“中国特色社会主义，承载着几代中国共产党人的理想和探索，寄托着无数仁人志士的意愿和期盼,凝聚着千千万万革命先烈的奋斗和牺牲，凝聚着全国各族人民的奋斗和实践，是近代以来( )。”","options":["A. 中国社会发展的必然选择","B. 历史和人民的选择","C. 中国道路的必然选择","D. 社会进步发展的选择"],"answer":"AB","note":null},{"no":80,"type":"multi","question":"1840年鸦片战争以后，中国逐步成为半殖民地半封建社会，(  )成为中国人民的历史任务。","options":["A. 争取民族独立、社会发展","B. 争取民族独立、人民解放","C. 实现国家富强、人民幸福","D. 实现国家富强、世界大同"],"answer":"BC","note":null},{"no":81,"type":"multi","question":"新时代坚持和发展中国特色社会主义，必须坚定(  )。","options":["A. 道路自信","B. 理论自信","C. 制度自信","D. 文化自信"],"answer":"ABCD","note":null},{"no":82,"type":"multi","question":"我们党领导人民完成了(  )的主要任务，为实现中华民族伟大复兴提供了重要的基础和保证。","options":["A. 新民主主义革命时期","B. 社会主义革命和建设时期","C. 改革开放和社会主义现代化建设新时期","D. 中国特色社会主义新时代"],"answer":"ABC","note":null},{"no":83,"type":"multi","question":"改革开放以来我们取得一切成绩和进步的根本原因，归结起来就是( )。","options":["A. 开辟了中国特色社会主义道路","B. 形成了中国特色社会主义理论体系","C. 确立了中国特色社会主义制度","D. 发展了中国特色社会主义文化"],"answer":"ABCD","note":null},{"no":84,"type":"multi","question":"中国特色社会主义是( )的辩证统一。","options":["A. 历史唯物主义","B. 科学社会主义理论逻辑","C. 理性主义","D. 中国社会发展历史逻辑"],"answer":"BD","note":null},{"no":85,"type":"single","question":"党的十八大后，党面临的主要任务是，实现( ),开启实现第二个百年奋斗目标新征程，朝着实现中华民族伟大复兴的宏伟目标继续前进。","options":["A. 脱贫攻坚任务的胜利","B. 中国特色社会主义进入新时代","C. 第一个百年奋斗目标","D. 社会主义现代化"],"answer":"C","note":null},{"no":86,"type":"single","question":"新时代我国社会主要矛盾的变化，是在社会主义初级阶段中发生的变化，( )对我国社会主义所处历史阶段的判断。","options":["A. 正在进行","B. 未能进行","C. 已经改变","D. 没有改变"],"answer":"D","note":null},{"no":87,"type":"single","question":"科学社会主义在21世纪的中国焕发出新的蓬勃生机，(  )为人类实现现代化提供了新的选择，中国共产党和中国人民为解决人类面临的共同问题提供更多更好的中国智慧、中国方案、中国力量，为人类和平与发展崇高事业作出新的更大的贡献!","options":["A. 中国式现代化","B. 中国特色社会主义","C. 供给侧结构性改革","D. “四个全面”战略布局"],"answer":"A","note":null},{"no":88,"type":"single","question":"( )是我国发展新的历史方位。","options":["A. 经济发展进入高质量发展阶段","B. 中国特色社会主义新时代","C. 我国正处于社会主义初级阶段","D. 中国已成为社会主义现代化强国"],"answer":"B","note":null},{"no":89,"type":"single","question":"改革开放后，我们党在对历史经验和我国国情作出科学分析的基础上提出社会主要矛盾是( )。","options":["A. 人民日益增长的物质文化需要同落后的社会生产之间的矛盾","B. 人民日益增长的美好生活需要和不平衡不充分的发展之间的矛盾","C. 人民日益增长的美好生活需要和不充分不协调之间的矛盾","D. 先进生产力发展的需要同落后的科技水平之间的矛盾"],"answer":"A","note":null},{"no":90,"type":"single","question":"党的士八大以来，经过科学分析，我们党及时作出我国社会主要矛盾日经转化为( )的重大战略判断。","options":["A. 人民日益增长的物质文化需要同落后的社会生产之间的矛盾","B. 人民日益增长的美好生活需要和不平衡不充分的发展之间的矛盾","C. 人民日益增长的美好生活需要和不充分不协调之间的矛盾","D. 先进生产力发展的需要同落后的科技水平之间的矛盾"],"answer":"B","note":null},{"no":91,"type":"single","question":"社会主要矛盾是各种社会矛盾的主要根源和集中反映，在社会矛盾运动中居于( )。","options":["A. 主要地位","B. 主导地位","C. 核心地位","D. 从属地位"],"answer":"B","note":null},{"no":92,"type":"multi","question":"我们既要看到我国社会主要矛盾发生的变化，也要看到我国仍处于并将长期处于(  )的基本国情没有变，我国是(  )的国际地位没有变。","options":["A. 社会主义初级阶段","B. 社会主义发展阶段","C. 世界最大发展中国家","D. 世界最大影响力国家"],"answer":"AC","note":null},{"no":93,"type":"multi","question":"进入新时代，以习近平同志为核心的党中央准确把握我国发展新的历史方位，不断深化对中国特色社会主义建设规律的认识，……解决了许多长期想解决而没有解决的难题，办成了许多过去想办而没有办成的大事，党和国家事业( ),推动我国迈上全面建设社会主义现代化国家新征程。","options":["A. 实现历史性跨越","B. 取得历史性成就","C. 发生历史性变革","D. 创造历史性发展"],"answer":"BC","note":null},{"no":94,"type":"multi","question":"党的十八大以来，党面临的主要任务是( )","options":["A. 实现第一个百年奋斗目标","B. 开启实现第二个百年奋斗目标新征程","C. 朝着实现中华民族伟大复兴的宏伟目标继续前进","D. 创造新时代中国特色社会主义的伟大成就"],"answer":"ABC","note":null},{"no":95,"type":"multi","question":"中国共产党和中国人民为解决人类面临的共同问题提供更多更好的中国智慧、( )，为人类和平与发展崇高事业作出新的更大的贡献。","options":["A. 中国科技","B. 中国方案","C. 中国力量","D. 中国行动"],"answer":"BC","note":null},{"no":96,"type":"multi","question":"党的二十大报告指出，改革开放和社会主义现代化建设深入推进，书写( )两大奇迹新篇章，我国发展具备了更为坚实的物质基础、更为完善的制度保证，实现中华民族伟大复兴进入了不可逆转的历史进程。","options":["A. 经济快速发展","B. 经济高质量发展","C. 社会长期稳定","D. 经济高速发展"],"answer":"AB","note":null},{"no":97,"type":"single","question":"是坚持和发展中国特色社会主义的行动指南。","options":["A. 党的基本路线","B. 党的基本方略","C. 党的基本理论","D. 党的基本原则"],"answer":"C","note":null},{"no":98,"type":"single","question":"(  )是国家的生命线、人民的幸福线。","options":["A. 党的基本路线","B. 党的基本方略","C. 党的基本理论","D. 党的群众路线"],"answer":"A","note":null},{"no":99,"type":"single","question":"(  )，是新的时代条件下坚持和发展中国特色社会主义、推进改革开放和社会主义现代化建设的战略抉择。","options":["A. “十个明确”","B. “十四个坚持”","C. “四个全面”战略布局","D. “五位一体”总体布局"],"answer":"C","note":null},{"no":100,"type":"single","question":"( )是前无古人的伟大事业，没有现成的方案可以遵循，必须随着时代、实践和科学的发展不断探索前进。","options":["A. 马克思主义","B. 社会主义","C. 中国特色社会主义","D. 社会主义现代化"],"answer":"B","note":null},{"no":101,"type":"single","question":"中国共产党人用自己的实践、奋斗和精神，不断揭示着(  )的必然趋势，不断展现着社会主义制度的优越性和共产主义的光明前景。","options":["A. 不同社会制度选择","B. 人类社会发展","C. 人类文明进步","D. 世界和平发展"],"answer":"B","note":null},{"no":102,"type":"multi","question":"走过百年奋斗历程的中国共产党在革命性锻造中更加坚强有力，党的(  )显著增强，党同人民群众始终保持血肉联系……","options":["A. 政治领导力","B. 思想引领力","C. 群众组织力","D. 社会号召力"],"answer":"ABCD","note":null},{"no":103,"type":"multi","question":"全面深化改革、( )是三大战略举措，为全面建设社会主义现代化国家提供重要保障。","options":["A. 全面建成小康社会","B. 全面依法治国","C. 全面从严治党","D. 全面加强党的建设"],"answer":"BC","note":null},{"no":104,"type":"single","question":"中国共产党人思考的基本问题是(   )。","options":["A. 坚持和发展什么样的中国特色社会主义、怎样坚持和发展中国特色社会主义","B. 建设什么样的党、怎样建设党","C. 实现什么样的发展、怎样发展","D. 什么是社会主义、怎样建设社会主义"],"answer":"D","note":null},{"no":105,"type":"single","question":"坚定道路自信，就是(     )。","options":["A. 坚信中国特色社会主义道路是我国实现社会主义现代化、创造人民美好生活的必由之路，是实现中华民族伟大复兴的必由之路","B. 坚信中国特色社会主义理论体系是指导党和人民实现中华民族伟大复兴的正确理论，是立足时代前沿、与时俱进的科学理论","C. 坚信中国特色社会主义制度是当代中国发展进步的根本制度保障，是具有明显制度优势、强大自我完善能力的先进制度","D. 坚信中国特色社会主义文化积淀着中华民族最深层的精神追求，代表着中华民族独特的精神标识，是激励全党全国各族人民奋勇前进的强大精神力量"],"answer":"A","note":null},{"no":106,"type":"single","question":"坚定理论自信，就是(   )。","options":["A. 坚信中国特色社会主义道路是我国实现社会主义现代化、创造人民美好生活的必由之路，是实现中华民族伟大复兴的必由之路","B. 坚信中国特色社会主义理论体系是指导党和人民实现中华民族伟大复兴的正确理论，是立足时代前沿、与时俱进的科学理论","C. 坚信中国特色社会主义制度是当代中国发展进步的根本制度保障，是具有明显制度优势、强大自我完善能力的先进制度","D. 坚信中国特色社会主义文化积淀着中华民族最深层的精神追求，代表着中华民族独特的精神标识，是激励全党全国各族人民奋勇前进的强大精神力量"],"answer":"B","note":null},{"no":107,"type":"single","question":"坚定制度自信，就是(   )。","options":["A. 坚信中国特色社会主义道路是我国实现社会主义现代化、创造人民美好生活的必由之路，是实现中华民族伟大复兴的必由之路","B. 坚信中国特色社会主义理论体系是指导党和人民实现中华民族伟大复兴的正确理论，是立足时代前沿、与时俱进的科学理论","C. 坚信中国特色社会主义制度是当代中国发展进步的根本制度保障，是具有明显制度优势、强大自我完善能力的先进制度","D. 坚信中国特色社会主义文化积淀着中华民族最深层的精神追求，代表着中华民族独特的精神标识，是激励全党全国各族人民奋勇前进的强大精神力量"],"answer":"C","note":null},{"no":108,"type":"single","question":"坚定文化自信，就是(  )。","options":["A. 坚信中国特色社会主义道路是我国实现社会主义现代化、创造人民美好生活的必由之路，是实现中华民族伟大复兴的必由之路","B. 坚信中国特色社会主义理论体系是指导党和人民实现中华民族伟大复兴的正确理论，是立足时代前沿、与时俱进的科学理论","C. 坚信中国特色社会主义制度是当代中国发展进步的根本制度保障，是具有明显制度优势、强大自我完善能力的先进制度","D. 坚信中国特色社会主义文化积淀着中华民族最深层的精神追求，代表着中华民族独特的精神标识，是激励全党全国各族人民奋勇前进的强大精神力量"],"answer":"D","note":null},{"no":109,"type":"single","question":"(    )是我国发展新的历史方位，标志着中国特色社会主义事业进入了新的发展阶段。【P22-23】","options":["A. 新时代","B. 新阶段","C. 新发展","D. 新时期"],"answer":"A","note":null},{"no":110,"type":"single","question":"党的十八大以来，经过科学分析，我们党及时作出我国社会主要矛盾已经转化为(   )。","options":["A. 人民日益增长的美好生活需要和不平衡不充分的发展之间的矛盾","B. 无产阶级同资产阶级之间的矛盾","C. 官僚资本同民族资本之间的矛盾","D. 人民日益增长的物质文化需要同落后的社会生产之间的矛盾"],"answer":"A","note":null},{"no":111,"type":"single","question":"中国特色社会主义事业总体布局是指(   )","options":["A. “四个全面”","B. “五位一体”","C. “十个明确”","D. “十四个坚持”"],"answer":"B","note":null},{"no":112,"type":"single","question":"一个国家实行什么样的主义，关键要看这个主义(   )。","options":["A. 是不是来自本土","B. 能否解决这个国家面临的历史性课题","C. 能否获得利益","D. 有没有实践过"],"answer":"B","note":null},{"no":113,"type":"single","question":"新时代我国社会主要矛盾的变化，是在社会主义初级阶段中发生的变化，(    )对我国社会主义所处历史阶段的判断。","options":["A. 正在进行","B. 未能进行","C. 已经改变","D. 没有改变"],"answer":"D","note":null},{"no":114,"type":"single","question":"科学社会主义在21世纪的中国焕发出新的蓬勃生机，(  )为人类实现现代化提供了新的选择，中国共产党和中国人民为解决人类面临的共同问题提供更多更好的中国智慧、中国方案、中国力量，为人类和平与发展崇高事业作出新的更大的贡献!","options":["A. 中国式现代化","B. 中国特色社会主义","C. 供给侧结构性改革","D. “四个全面”战略布局"],"answer":"A","note":null},{"no":115,"type":"single","question":"(   )是坚持和发展中国特色社会主义的行动指南。","options":["A. 党的基本路线","B. 党的基本方略","C. 党的基本理论","D. 党的基本原则"],"answer":"C","note":null},{"no":116,"type":"single","question":"中国共产党为什么能，中国特色社会主义为什么好，归根到底是马克思主义行，是(  )。【P29-30】","options":["A. 中国化时代化的马克思主义行","B. 中国式现代化行","C. 中华民族伟大复兴战略行","D. 人类社会发展规律行"],"answer":"A","note":null},{"no":117,"type":"single","question":"要把握新的伟大斗争的历史特点，(   )，增强斗争本领，凝聚起全党全国各族人民的意志和力量，全力战胜一切可以预见和难以预见的风险挑战。","options":["A. 坚持人民至上","B. 发扬斗争精神","C. 坚持马克思主义","D. 坚定初心使命"],"answer":"B","note":null},{"no":118,"type":"single","question":"(  )是国家的生命线、人民的幸福线。","options":["A. 党的基本路线","B. 党的基本方略","C. 党的基本理论","D. 党的群众路线"],"answer":"A","note":null},{"no":119,"type":"single","question":"党的十九大概括的以( )为主要内容的基本方略，涵盖了坚持党的全面领导和全面从严治党，涵盖了“五位一体”总体布局和“四个全面”战略布局，涵盖了国防和军队建设、维护国家安全、“一国两制”和祖国统一、对外战略等方面，反映了我们党对建设中国特色社会主义的规律性认识。","options":["A. “十个明确”","B. “十四个坚持”","C. “十三个方面”","D. “六个必须坚持”"],"answer":"B","note":null},{"no":120,"type":"single","question":"(  )是新的时代条件下坚持和发展中国特色社会主义、推进改革开放和社会主义现代化建设的战略抉择。","options":["A. “十个明确”","B. “十四个坚持”","C. “四个全面”战略布局","D. “五位一体”总体布局"],"answer":"C","note":null},{"no":121,"type":"single","question":"我国社会主义还处在  )，我们还面临很多没有弄清楚的问题和待解的难题，对许多重大问题的认识和处理都还处在不断深化的过程之中，这一点也不容置疑。","options":["A. 初级阶段","B. 高级阶段","C. 发展阶段","D. 困难阶段"],"answer":"A","note":null},{"no":122,"type":"multi","question":"中国特色社会主义不是从天上掉下来的，而是(  )。","options":["A. 在改革开放40多年的伟大实践中得来的","B. 在新中国成立70多年的持续探索中得来的","C. 在中国共产党领导人民进行伟大社会革命100多年的实践中得来的","D. 在近代以来中华民族由衰到盛180多年的历史进程中得来的","E. 在世界社会主义500多年波澜壮阔的发展历程中得来的"],"answer":"ABCDE","note":null},{"no":123,"type":"multi","question":"中国特色社会主义新时代，(  )。","options":["A. 是承前启后、继往开来，在新的历史条件下继续夺取中国特色社会主义伟大胜利的时代","B. 是决胜全面建成小康社会、进而全面建设社会主义现代化强国的时代","C. 是全国各族人民团结奋斗、不断创造美好生活、逐步实现全体人民共同富裕的时代","D. 全体中华儿女勠力同心、奋力实现中华民族伟大复兴中国梦的时代","E. 是我国不断为人类作出更大贡献的时代"],"answer":"ABCDE","note":null},{"no":124,"type":"multi","question":"中国特色社会主义进入新时代的判断依据有(   )。【P23-24】","options":["A. 是我国社会主要矛盾发生新变化的反映","B. 是党的主要任务发生新变化的反映","C. 是中国和世界关系发生新变化的反映","D. 是我国经济发生新变化的反映"],"answer":"ABC","note":null},{"no":125,"type":"multi","question":"改革开放以来我们取得一切成绩和进步的根本原因，归结起来就是:(  )。","options":["A. 开辟了中国特色社会主义道路","B. 形成了中国特色社会主义理论体系","C. 确立了中国特色社会主义制度","D. 发展了中国特色社会主义文化"],"answer":"ABCD","note":null},{"no":126,"type":"multi","question":"党的十九大概括中国特色社会主义进入新时代的重大意义，这就是:(  )","options":["A. 意味着中华民族迎来了从站起来、富起来到强起来的伟大飞跃，迎来了中华民族伟大复兴的光明前景。","B. 意味着科学社会主义在中国焕发出强大生机活力，在世界上高高举起了中国特色社会主义伟大旗帜","C. 意味着中国特色社会主义道路、理论、制度、文化不断发展，拓展了发展中国家实现现代化的途径","D. 意味着中国即将建成社会主义现代化强国，全体人民过上共同富裕的生活。"],"answer":"ABC","note":null},{"no":127,"type":"multi","question":"我们既要看到我国社会主要矛盾发生的变化，也要看到我国(  )没有变。","options":["A. 处于并将长期处于社会主义初级阶段的基本国情没有变","B. 处于并将长期处于社会主义发展阶段的基本国情没有变","C. 世界最大发展中国家的国际地位","D. 世界最大影响力国家的国际地位"],"answer":"AC","note":null},{"no":128,"type":"multi","question":"进入新时代，以习近平同志为核心的党中央准确把握我国发展新的历史方位，不断深化对中国特色社会主义建设规律的认识，……解决了许多长期想解决而没有解决的难题，办成了许多过去想办而没有办成的大事，党和国家事业(   )，推动我国迈上全面建设社会主义现代化国家新征程。","options":["A. 实现历史性跨越","B. 取得历史性成就","C. 发生历史性变革","D. 创造历史性发展"],"answer":"BC","note":null},{"no":129,"type":"multi","question":"中国特色社会主义写出了科学社会主义的“新版本”。这意味着当代中国的伟大社会变革，不是(  )","options":["A. 简单延续我国历史文化的母版","B. 简单套用马克思主义经典作家设想的模板","C. 其他国家社会主义实践的再版","D. 国外现代化发展的翻版"],"answer":"ABCD","note":null},{"no":130,"type":"judge","question":"中国特色社会主义的思想前提和理论基础是科学社会主义基本原则。(   )","options":[],"answer":"对","note":null},{"no":131,"type":"judge","question":"中国特色社会主义，既坚持了科学社会主义基本原则，又根据时代条件赋予其鲜明的中国特色。这就是说，中国特色社会主义是社会主义而不是其他什么主义。(        )","options":[],"answer":"对","note":null},{"no":132,"type":"judge","question":"制度自信是更基础、更广泛、更深厚的自信，是一个国家、一个民族发展中最基本、最深沉、最持久的力量(        )","options":[],"answer":"错","note":null},{"no":133,"type":"judge","question":"中国特色社会主义道路是实现途径，理论体系是行动指南，制度是根本保障，文化是精神力量，四者统一于中国特色社会主义伟大实践。(        )","options":[],"answer":"对","note":null},{"no":134,"type":"judge","question":"新时代我国社会主要矛盾的变化意味着我国已经超越了社会主义初级阶段。(        )","options":[],"answer":"错","note":null},{"no":135,"type":"judge","question":"党的十八大后，党面临的主要任务是实现第二个百年奋斗目标。(        )","options":[],"answer":"错","note":null},{"no":136,"type":"judge","question":"新时代的伟大变革，在党史、新中国史、改革开放史、社会主义发展史、中华民族发展史上具有里程碑意义。(        )","options":[],"answer":"对","note":null},{"no":137,"type":"judge","question":"“五位一体”总体布局和“四个全面”战略布局相互促进、统筹联动，从全局上确立了新时代坚持和发展中国特色社会主义的战略规划和部署。(        )【P30-31】","options":[],"answer":"对","note":null},{"no":138,"type":"judge","question":"社会主义是一个不断发展和完善的实践过程，需要一代又一代人接续奋斗。(        )","options":[],"answer":"对","note":null},{"no":139,"type":"single","question":"(  )，是近代以来中国人民的共同梦想，是中国共产党矢志不渝的奋斗目标。","options":["A. 社会主义现代化建设","B. 中国特色社会主义","C. 国家富强民族振兴","D. 实现中华民族伟大复兴"],"answer":"D","note":null},{"no":140,"type":"single","question":"(  )，习近平在庆祝中国共产党成立100周年大会上庄严宣告:“经过全党全国各族人民持续奋斗，我们实现了第一个百年奋斗目标，在中华大地上全面建成了小康社会，历史性地解决了绝对贫困问题，正在意气风发向着全面建成社会主义现代化强国的第二个百年奋斗目标迈进。”","options":["A. 2018年7月1日","B. 2019年7月1日","C. 2021年7月1日","D. 2022年7月1日"],"answer":"C","note":null},{"no":141,"type":"single","question":"摆脱贫困一直是困扰全球发展和治理的突出难题，我国提前(  )实现联合国2030年可持续发展议程减贫目标。","options":["A. 10年","B. 15年","C. 20年","D. 25年"],"answer":"A","note":null},{"no":142,"type":"single","question":"(  )把我国建成富强民主文明和谐美丽的社会主义现代化强国。","options":["A. 从2020年到2035年","B. 从2020年到2045年","C. 从2035年到2050年","D. 从2035年到本世纪中叶"],"answer":"D","note":null},{"no":143,"type":"single","question":"( )，标志着第一个百年奋斗目标胜利实现，国家更富强、人民更幸福、社会更稳定、环境更优美，人民获得感幸福感安全感显著提升，中华民族实现了从大幅落后于时代到大踏步赶上时代的新跨越。","options":["A. 打赢脱贫攻坚战","B. 成为世界第二大经济体","C. 中国特色社会主义进入新时代","D. 如期全面建成小康社会"],"answer":"D","note":null},{"no":144,"type":"single","question":"党的( )作出了从全面建成小康社会到基本实现社会主义现代化，再到全面建成社会主义现代化强国的战略安排。","options":["A. 十七大","B. 十八大","C. 十九大","D. 二十大"],"answer":"C","note":null},{"no":145,"type":"single","question":"中国梦把( )融为一体，是国家的梦、民族的梦，也是每一个中国人的梦","options":["A. 国家的追求","B. 民族的向往","C. 人民的期盼","D. 世界的统一"],"answer":"C","note":null},{"no":146,"type":"single","question":"中国梦归根到底是( )，必须紧紧依靠人民来实现，必须不断为人民造福。","options":["A. 国家的梦","B. 人民的梦","C. 民族的梦","D. 世界的梦"],"answer":"B","note":null},{"no":147,"type":"single","question":"实现中国梦必须走中国道路，这就是( )。","options":["A. 中华民族大团结之路","B. 社会发展之路","C. 人民民主专政之路","D. 中国特色社会主义道路"],"answer":"D","note":null},{"no":148,"type":"single","question":"实现中国梦必须凝聚中国力量，这就是( )。","options":["A. 各族人民大团结的力量","B. 中国共产党的领导力量","C. 中高速增长的经济力量","D. 保障有力的军事力量"],"answer":"A","note":null},{"no":149,"type":"multi","question":"新时代新征程中国共产党的中心任务，就是团结带领全国各族人民、(  )，以中国式现代化全面推进中华民族伟大复兴。","options":["A. 全面建成社会主义现代化强国","B. 实现第一个百年奋斗目标","C. 实现第二个百年奋斗目标","D. 全面建成社会主义现代化国家"],"answer":"AC","note":null},{"no":150,"type":"multi","question":"实现中华民族伟大复兴的中国梦，本质是(  )。","options":["A. 国家富强","B. 民族振兴","C. 人民幸福","D. 世界大同"],"answer":"ABC","note":null},{"no":151,"type":"multi","question":"我们要统揽(  )，劾力同心、接力奋斗，用实干托起中国梦。","options":["A. 伟大斗争","B. 伟大工程","C. 伟大事业","D. 伟大梦想"],"answer":"ABCD","note":null},{"no":152,"type":"multi","question":"中国梦是( )的梦，中国人民愿意同各国人民在实现各自梦想的过程中相互支持、相互帮助，在推动实现持久和平、共同繁荣世界梦的崇高事业中作出更大贡献。","options":["A. 和平","B. 发展","C. 互利","D. 共赢"],"answer":"ABD","note":null},{"no":153,"type":"multi","question":"习近平指出:“全面建成小康社会，强调的不仅是‘小康’，而且更重要的也是更难做到的是‘全面’。‘小康’讲的是发展水平，‘全面’讲的是发展的平衡性、(   )。","options":["A. 充分性","B. 协调性","C. 经济性","D. 可持续性"],"answer":"BD","note":null},{"no":154,"type":"multi","question":"我们确立了“两个一百年”奋斗目标，就是( )。","options":["A. 到2020年实现国内生产总值和城乡居民人均收入比2010年翻一番，全面建成小康社会","B. 到本世纪中叶建成富强民主文明和谐美丽的社会主义现代化国家，实现中华民族伟大复兴","C. 到2035年，基本建成社会主义现代化国家","D. 到2025年，实现工业强国目标"],"answer":"AB","note":null},{"no":155,"type":"multi","question":"全面建成了小康社会的重大意义是( )。","options":["A. 意味着中华民族实现千百年来的夙愿","B. 表明我国已实现共同富裕","C. 表明我国已经实现了由高速发展向高质量发展转变","D. 是实现中华民族伟大复兴征程中的关键一步"],"answer":"AD","note":null},{"no":156,"type":"single","question":"(  )决定中国式现代化的根本性质。","options":["A. 党的领导","B. 人民当家作主","C. 依法治国","D. 中国特色社会主义"],"answer":"A","note":null},{"no":157,"type":"single","question":"(  )是推进现代化最坚实的根基、最深厚的力量。","options":["A. 文化","B. 中国共产党的领导","C. 人民","D. 中华文明"],"answer":"C","note":null},{"no":158,"type":"single","question":"孙中山领导辛亥革命试图以建立资产阶级共和国、振兴实业等方案来实现现代化，他的(  )被称为近代中国谋求现代化的第一份蓝图。","options":["A. 《建国方略》","B. 《现代化之路》","C. 《中国方案》","D. 《振兴中华》"],"answer":"A","note":null},{"no":159,"type":"single","question":"必须把( )作为现代化建设的出发点和落脚点，在推动高质量发展的同时，解决好地区差距、城乡差距、收入分配差距，着力维护和促进社会公平正义，坚决防止两极分化。","options":["A. 促进社会和谐","B. 提升人民生活水平","C. 实现人民对美好生活的向往","D. 建设美丽家园"],"answer":"C","note":null},{"no":160,"type":"single","question":"( )是强国建设、民族复兴的唯一正确道路","options":["A. 改革开放","B. 市场经济","C. 科教兴国","D. 中国式现代化"],"answer":"D","note":null},{"no":161,"type":"single","question":"从全面建设社会主义现代化国家进程的阶段安排看来，到2035年，我国将( )。","options":["A. 全面建成小康社会","B. 实现中华民族伟大复兴的中国梦","C. 把我国建设成为富强美丽文明和谐的社会现代化强国。","D. 基本实现社会主义现代化"],"answer":"D","note":null},{"no":162,"type":"multi","question":"中国式现代化是中国共产党领导的社会主义现代化，这是对中国式现代化的定性，是(  )的。","options":["A. 管总","B. 管根本","C. 管长远","D. 管大局"],"answer":"AB","note":null},{"no":163,"type":"multi","question":"中国式现代化，深深植根于( )，体现( )的先进本质，借鉴吸收一切人类优秀文明成果，代表人类文明进步的发展方向，是一种全新的人类文明形态。","options":["A. 中华五千年灿烂文明","B. 中华优秀传统文化","C. 科学社会主义","D. 中国特色社会主义"],"answer":"BC","note":null},{"no":164,"type":"multi","question":"中国式现代化的中国特色有人口规模巨大的现代化、( )。","options":["A. 全体人民同步富裕的现代化","B. 走和平发展道路的现代化","C. 人与自然和谐共生的现代化","D. 物质文明和精神文明相协调的现代化"],"answer":"BCD","note":null},{"no":165,"type":"multi","question":"（   ），是我们党的初心和使命，是党领导现代化建设的出发点和落脚点，也是新发展理念的“根”和“魂。","options":["A. 为人民谋幸福","B. 为人民谋复兴","C. 为民族谋复兴","D. 为民族谋幸福"],"answer":"AC","note":null},{"no":166,"type":"multi","question":"中国式现代化的本质要求是坚持中国共产党领导，坚持中国特色社会主义，( )，促进人与自然和谐共生，推动构建人类命运共同体，创造人类文明新形态。","options":["A. 实现高速发展","B. 发展全过程人民民主","C. 丰富人民精神世界","D. 实现全体人民同步富裕"],"answer":"BC","note":null},{"no":167,"type":"single","question":"(  )是中华民族精神之魂，是我们立党立国的重要原则。","options":["A. 文化自信","B. 人民至上","C. 社会主义制度","D. 独立自主"],"answer":"D","note":null},{"no":168,"type":"single","question":"( )是中国共产党和中国人民最显著的精神标识，是中国人民创造历史伟业的必由之路。","options":["A. 自力更生","B. 团结奋斗","C. 斗争精神","D. 中国精神"],"answer":"B","note":null},{"no":169,"type":"multi","question":"推进中国式现代化，必须坚持(  )，坚持道不变、志不改，既不走封闭僵化的老路，也不走改旗易帜的邪路，始终坚持和发展中国特色社会主义。","options":["A. 以经济建设为中心","B. 坚持四项基本原则","C. 坚持改革开放","D. 坚持独立自主、自力更生"],"answer":"ABCD","note":null},{"no":170,"type":"multi","question":"推进中国式现代化需要牢牢把握的重大原则是坚持和加强党的全面领导、(    )。","options":["A. 坚持中国特色社会主义道路","B. 坚持以人民为中心的发展思想","C. 坚持依法治国","D. 坚持发扬斗争精神"],"answer":"ABD","note":null},{"no":171,"type":"multi","question":"习近平总书记强调，“推进中国式现代化是一个系统工程，需要统筹兼顾、系统谋划、整体推进，正确处理好顶层设计与实践探索、战略与策略、(   )等一系列重大关系。","options":["A. 继承与发展","B. 效率与公平","C. 活力与秩序","D. 自立自强与对外开放"],"answer":"BCD","note":null},{"no":172,"type":"single","question":"“中国梦”首次提出是在(        )。","options":["A. 2012年11月","B. 2013年11月","C. 2014年11月","D. 2015年11月"],"answer":"A","note":null},{"no":173,"type":"single","question":"一百年来，中国共产党团结带领中国人民进行的一切奋斗、一切牺牲、一切创造，归结起来就是一个主题(        )。","options":["A. 建立新中国","B. 追求共同富裕","C. 实现中华民族伟大复兴","D. 实现人民对美好生活的向往"],"answer":"C","note":null},{"no":174,"type":"single","question":"为了实现中华民族伟大复兴，中国共产党团结带领中国人民(        )，开创了中国特色社会主义新时代，全面建成小康社会、迈上全面建设社会主义现代化国家新征程，中华民族迎来了从站起来、富起来到强起来的伟大飞跃。","options":["A. 浴血奋战、百折不挠","B. 自力更生、艰苦创业","C. 解放思想、锐意进取","D. 自信自强、守正创新"],"answer":"C","note":null},{"no":175,"type":"single","question":"改革开放之初，我们党在设计我国社会主义现代化蓝图时，结合中国实际提出从解决温饱、实现小康进而基本实现现代化的(        )发展战略。","options":["A. “两步走”","B. 新“两步走”","C. “三步走”","D. 新“三步走”"],"answer":"C","note":null},{"no":176,"type":"single","question":"2021年7月1日，习近平在庆祝中国共产党成立100周年大会上庄严宣告:“经过全党全国各族人民持续奋斗，我们实现了(   )，在中华大地上全面建成了小康社会，历史性地解决了绝对贫困问题，正在意气风发向着全面建成社会主义现代化强国的第二个百年奋斗目标迈进。”","options":["A. 第一个百年奋斗目标","B. 社会主义现代化国家","C. 社会主义现代化强国","D. 中华民族伟大复兴"],"answer":"A","note":null},{"no":177,"type":"single","question":"摆脱贫困一直是困扰全球发展和治理的突出难题，我国提前(  )实现联合国2030年可持续发展议程减贫目标。","options":["A. 5年","B. 8年","C. 10年","D. 15年"],"answer":"C","note":null},{"no":178,"type":"single","question":"党的二十大报告指出，到2035年，我国发展的总体目标包括建成教育强国、(  )、人才强国、文化强国、体育强国、健康中国，国家文化软实力显著增强。","options":["A. 科技强国","B. 网络强国","C. 质量强国","D. 航天强国"],"answer":"A","note":null},{"no":179,"type":"single","question":"全面建成社会主义现代化强国的战略安排，把基本实现社会主义现代化的时间提前了(  )年。","options":["A. 25年","B. 15年","C. 35年","D. 10年"],"answer":"B","note":null},{"no":180,"type":"single","question":"孙中山领导辛亥革命试图以建立资产阶级共和国、振兴实业等方案来实现现代化，他的(  )被称为近代中国谋求现代化的第一份蓝图。","options":["A. 《建国方略》","B. 《现代化之路》","C. 《中国方案》","D. 《振兴中华》"],"answer":"A","note":null},{"no":181,"type":"single","question":"中国式现代化的中国特色不包括(  )。【P44-46】","options":["A. 人口规模巨大的现代化","B. 全体人民共同富裕的现代化","C. 物质文明和精神文明相协调的现代化","D. 社会与自然和谐共生的现代化"],"answer":"D","note":null},{"no":182,"type":"single","question":"党的十八大以来，我们党在认识上不断深化，创立了(  )，实现了马克思主义中国化时代化新的飞跃，为中国式现代化提供了根本遵循。","options":["A. 马克思主义","B. 毛泽东思想","C. 邓小平理论","D. 习近平新时代中国特色社会主义思想"],"answer":"D","note":null},{"no":183,"type":"single","question":"(  )集中概括了中国式现代化五个方面的中国特色，深刻揭示了中国式现代化的科学内涵，这是理论概括，也是实践要求。","options":["A. 党的十七大","B. 党的十八大","C. 党的十九大","D. 党的二十大"],"answer":"D","note":null},{"no":184,"type":"single","question":"中国式现代化区别于西方现代化的显著标志是(  )。","options":["A. 人口规模巨大的现代化","B. 全体人民共同富裕的现代化","C. 物质文明和精神文明相协调的现代化","D. 人与自然和谐共生的现代化"],"answer":"B","note":null},{"no":185,"type":"single","question":"中国式现代化是(    )的社会主义现代化，这是对中国式现代化的定性，是管总、管根本的。","options":["A. 中国共产党领导","B. 人民至上","C. 全面小康","D. 依法治国"],"answer":"A","note":null},{"no":186,"type":"single","question":"全面建设社会主义现代化国家必须牢牢把握的重大原则有:坚持和加强党的全面领导、坚持中国特色社会主义道路、坚持以人民为中心的发展思想、坚持深化改革开放、(        )。【P50-51】","options":["A. 坚持系统观念","B. 坚持人民至上","C. 坚持发扬斗争精神","D. 坚持自立自强"],"answer":"C","note":null},{"no":187,"type":"single","question":"(        )是推进现代化最坚实的根基、最深厚的力量。","options":["A. 党的领导","B. 人民","C. 文化","D. 改革开放"],"answer":"B","note":null},{"no":188,"type":"single","question":"全面建设社会主义现代化国家、全面推进中华民族伟大复兴，动力在于(        )。","options":["A. 全面深化改革开放","B. 发扬斗争精神","C. 党的全面领导","D. 坚持以人民为中心"],"answer":"A","note":null},{"no":189,"type":"single","question":"要把(        )摆在国家发展全局的突出位置，顺应时代发展要求，不断开辟发展新领域新赛道，不断塑造发展新动能新优势。","options":["A. 绿色","B. 开放","C. 创新","D. 教育"],"answer":"C","note":null},{"no":190,"type":"single","question":"(        )是中华民族精神之魂，是我们立党立国的重要原则。","options":["A. 实事求是","B. 人民至上","C. 独立自主","D. 改革创新"],"answer":"C","note":null},{"no":191,"type":"single","question":"(        )是中国共产党和中国人民最显著的精神标识，是中国人民创造历史伟业的必由之路。","options":["A. 党的领导","B. 团结奋斗","C. 顽强拼搏","D. 中国特色社会主义"],"answer":"B","note":null},{"no":192,"type":"multi","question":"中国梦的本质是(        )。","options":["A. 国家富强","B. 社会和谐","C. 民族振兴","D. 人民幸福"],"answer":"ACD","note":null},{"no":193,"type":"multi","question":"党的二十大进一步明确，全面建成社会主义现代化强国总的战略安排是(        )","options":["A. 从2017年到2037年基本实现社会主义现代化","B. 从2037年到本世纪中叶把我国建成富强民主文明和谐美丽的社会主义现代化强国","C. 从2020年到2035年基本实现社会主义现代化","D. 从2035年到本世纪中叶把我国建成富强民主文明和谐美丽的社会主义现代化强国"],"answer":"CD","note":null},{"no":194,"type":"multi","question":"从2020年到2035年，基本实现社会主义现代化的目标要求(        )。","options":["A. 在经济建设方面，我国经济实力、科技实力将大幅跃升，跻身创新型国家前列","B. 在政治建设方面，人民平等参与、平等发展权利得到充分保障，法治国家、法治政府、法治社会基本建成，各方面制度更加完善，国家治理体系和治理能力现代化基本实现","C. 在文化建设方面，社会文明程度达到新的高度，国家文化软实力显著增强，中华文化影响更加广泛深入","D. 在生态文明建设方面，生态环境根本好转，美丽中国目标基本实现"],"answer":"ABCD","note":null},{"no":195,"type":"multi","question":"进入新时代，我们党在战略上不断完善，统筹推进(        )总体布局，协调推进(        )战略布局，确立了推进中国式现代化的战略规划和总体部署，深入实施科教兴国战略、人才强国战略、乡村振兴战略等一系列重大战略，为中国式现代化提供坚实战略支撑。(        )","options":["A. “五位一体”","B. “四个全面”","C. “四位一体”","D. “五个全面”"],"answer":"AB","note":null},{"no":196,"type":"multi","question":"(        )是社会主义现代化的根本要求。","options":["A. 党的领导","B. 人民当家作主","C. 物质富足","D. 精神富有"],"answer":"CD","note":null},{"no":197,"type":"multi","question":"中国式现代化是人与自然和谐共生的现代化，必须牢固树立和践行绿水青山就是金山银山的理念，坚持(        )的方针。","options":["A. 节约优先","B. 生态良好","C. 保护优先","D. 自然恢复为主"],"answer":"ACD","note":null},{"no":198,"type":"multi","question":"中国式现代化必须始终高举(        )旗帜，奉行互利共赢的开放战略，为广大发展中国家提供力所能及的支持和帮助，以中国新发展为世界提供新机遇。","options":["A. 和平","B. 发展","C. 合作","D. 共赢"],"answer":"ABCD","note":null},{"no":199,"type":"multi","question":"推进中国式现代化，必须坚持以经济建设为中心，坚持(        )，坚持道不变、志不改，既不走封闭僵化的老路，也不走改旗易帜的邪路，始终坚持和发展中国特色社会主义。","options":["A. 四项基本原则","B. 改革开放","C. 独立自主","D. 自力更生"],"answer":"ABCD","note":null},{"no":200,"type":"multi","question":"推进中国式现代化是一个系统工程，需要统筹兼顾、系统谋划、整体推进，正确处理好顶层设计与实践探索、战略与策略、守正与创新、(        )等一系列重大关系。","options":["A. 效率与公平","B. 活力与秩序","C. 自立自强与对外开放","D. 封闭与开放"],"answer":"ABC","note":null},{"no":201,"type":"judge","question":"中国共产党领导是中国特色社会主义最本质的特征。(        )","options":[],"answer":"对","note":null},{"no":202,"type":"judge","question":"中国共产党以马克思列宁主义作为行动指南，在实践中不断推进马克思主义中国化时代化，为坚持和完善中国特色社会主义制度提供强大理论优势。(        )","options":[],"answer":"错","note":null},{"no":203,"type":"judge","question":"政治领导力是马克思主义政党第一位的能力。(        )","options":[],"answer":"对","note":null},{"no":204,"type":"judge","question":"中国共产党是最高政治领导力量。(        )","options":[],"answer":"对","note":null},{"no":205,"type":"judge","question":"党的领导是全面的、系统的、整体的、多元的。(        )","options":[],"answer":"错","note":null},{"no":206,"type":"judge","question":"党组织包揽包办一切，事无巨细都需要管。(        )","options":[],"answer":"错","note":null},{"no":207,"type":"judge","question":"维护党中央权威和集中统一领导，对象是党中央。(        )","options":[],"answer":"对","note":null},{"no":208,"type":"judge","question":"维护党中央权威和集中统一领导，同坚持党的民主集中制是完全一致的。(        )","options":[],"answer":"对","note":null},{"no":209,"type":"judge","question":"党的领导制度是一个系统完备、内涵丰富的制度体系，主要涵盖五个方面的制度。(        )","options":[],"answer":"错","note":null},{"no":210,"type":"judge","question":"我国社会主义政治制度优越性的一个突出特点是党总揽全局、协调各方的领导核心作用。(        )","options":[],"answer":"对","note":null},{"no":211,"type":"single","question":"(  )是中国特色社会主义事业的坚强领导核心。","options":["A. 人民","B. 工人阶级","C. 知识分子","D. 中国共产党"],"answer":"D","note":null},{"no":212,"type":"single","question":"(  )是实现中华民族伟大复兴的根本保证。","options":["A. 人民当家作主","B. 社会主义法治国家","C. 中国共产党领导","D. 社会主义基本制度"],"answer":"C","note":null},{"no":213,"type":"single","question":"中国共产党以(  )作为行动指南，在实践中不断推进马克思主义中国化时代化，为坚持和完善中国特色社会主义制度提供强大理论优势。","options":["A. 马克思主义中国化时代化","B. 人民共同富裕","C. 马克思主义","D. 如期全面建成小康社会"],"answer":"C","note":null},{"no":214,"type":"single","question":"(  )是中国特色社会主义制度优势的主要来源。","options":["A. 中国共产党的自身优势","B. 科学社会主义","C. 社会主义改革开放","D. “两个一百年”"],"answer":"A","note":null},{"no":215,"type":"single","question":"(  )是马克思主义政党第一位的能力","options":["A. 政治领导力","B. 思想引领力","C. 群众组织力","D. 社会号召力"],"answer":"A","note":null},{"no":216,"type":"single","question":"(  )是最彻底的自我革命……","options":["A. 零容忍","B. 反腐败","C. 党内民主","D. 人民监督"],"answer":"B","note":null},{"no":217,"type":"single","question":"维护(  )，是一个成熟的马克思主义执政党的重大建党原则。","options":["A. 中国特色社会主义制度","B. 人民当家作主","C. 全面依法治国","D. 党中央权威和集中统一领导"],"answer":"D","note":null},{"no":218,"type":"single","question":"中国共产党是以(  )为根本组织原则和领导制度的马克思主义政党。","options":["A. 社会主义","B. 民主集中制","C. 政治协商制度","D. 党内监督"],"answer":"B","note":null},{"no":219,"type":"single","question":"中国共产党领导是国家治理体系的核心，(  )是中国特色社会主义制度建设的关键。","options":["A. 人民代表大会制度","B. 党的领导制度","C. 社会主义制度","D. 民主集中制"],"answer":"B","note":null},{"no":220,"type":"single","question":"我国社会主义政治制度优越性的一个突出特点是党总揽全局、协调各方的领导核心作用，形象地说是“众星捧月”，这个“月”就是(  )。","options":["A. 人民","B. 工人","C. 知识分子","D. 中国共产党"],"answer":"D","note":null},{"no":221,"type":"multi","question":"中国特色社会主义有很多特点和特征，其中最本质的特征是中国共产党领导。这个最本质特征是在近代以来中国历史发展中形成的，是由(  )决定的。","options":["A. 中国最广大人民根本利益","B. 中国的基本国情","C. 实现中华民族伟大复兴历史任务","D. 全面建成社会主义现代化国家"],"answer":"AC","note":null},{"no":222,"type":"multi","question":"中国特色社会主义之所以是社会主义，究其根本就(  )。","options":["A. 在于坚持科学社会主义基本原则","B. 在于坚持中国共产党的领导","C. 在于坚持中国特色社会主义","D. 在于坚持社会主义道路"],"answer":"AB","note":null},{"no":223,"type":"multi","question":"党始终坚持真理、修正错误，(  )，始终保持强大的创造力、凝聚力、战斗力。","options":["A. 自我净化","B. 自我完善","C. 自我革新","D. 自我提高"],"answer":"ABCD","note":null},{"no":224,"type":"multi","question":"坚持和加强党的全面领导，使党的(  )显著增强。","options":["A. 政治领导力","B. 思想引领力","C. 群众组织力","D. 社会号召力"],"answer":"ABCD","note":null},{"no":225,"type":"multi","question":"面对突如其来的新冠疫情，我们党统揽全局、果断决策，坚持人民至上、生命至上，第一时间调动全国力量，迅速打响疫情防控的(  )，党的基层组织全面动员，奋力夺取疫情防控重大决定性胜利。","options":["A. 整体斗争","B. 人民战争","C. 总体战","D. 阻击战"],"answer":"BCD","note":null},{"no":226,"type":"multi","question":"中国共产党是最高政治领导力量，党的领导是( )，必须坚持党对一切工作的领导。","options":["A. 全面的","B. 系统的","C. 整体的","D. 多元的"],"answer":"ABC","note":null},{"no":227,"type":"multi","question":"中国共产党作为最高政治领导力量是由我国(  )决定的。","options":["A. 国家性质","B. 政治制度体系","C. 基本国情","D. 时代特征"],"answer":"AB","note":null},{"no":228,"type":"judge","question":"江山就是人民、人民就是江山，这是由人民群众在党和国家中的地位决定的。(        )","options":[],"answer":"错","note":null},{"no":229,"type":"judge","question":"保持党同人民群众的血肉联系关系到党的生死存亡、兴旺发达。(        )","options":[],"answer":"对","note":null},{"no":230,"type":"judge","question":"为人民谋幸福是党始终坚守的初心，让人民过上好日子是党一贯的追求。(        )","options":[],"answer":"对","note":null},{"no":231,"type":"judge","question":"进入新时代，我国社会主要矛盾发展了转化，人民的美好生活需要呈现出多样化、多层次、多方面的特点。(        )","options":[],"answer":"对","note":null},{"no":232,"type":"judge","question":"人民是我们党的生命之根、执政之基、力量之源。(        )","options":[],"answer":"对","note":null},{"no":233,"type":"judge","question":"评价干部的工作成效，不仅要看纸面上的指标数据，更要看人民的生活好不好、看民生是否改善、看生态是否良好、看社会是否进步，可以直接以国内生产总值增长率论英雄。(        )","options":[],"answer":"错","note":null},{"no":234,"type":"judge","question":"坚持以人民为中心的发展思想是具体的、现实的，而不是抽象的、空泛的，必须体现在经济社会发展各个环节，体现在更好满足人民美好生活需要的实践当中。(        )","options":[],"answer":"对","note":null},{"no":235,"type":"judge","question":"贯彻党的群众路线，“知”是重点、是关键，“行”是基础、是前提。(        )","options":[],"answer":"错","note":null},{"no":236,"type":"judge","question":"推动全体人民共同富裕与促进人的全面发展是高度统一的。(        )","options":[],"answer":"对","note":null},{"no":237,"type":"single","question":"(  )是马克思主义的本质属性和鲜明品格。","options":["A. 实事求是","B. 科学社会主义","C. 实践","D. 人民性"],"answer":"D","note":null},{"no":238,"type":"single","question":"(  ),是新时代坚持和发展中国特色社会主义的根本立场，是贯穿党治国理政全部活动的一条红线。","options":["A. 人民当家作主","B. 中国共产党领导","C. 坚持以人民为中心","D. 社会主义基本制度"],"answer":"C","note":null},{"no":239,"type":"single","question":"坚持以人民为中心，体现了(  )基本原理，是我们党总结历史经验、把握历史规律得出的重要结论。","options":["A. 历史唯物主义","B. 辩证唯物主义","C. 科学社会主义","D. 人类社会发展规律"],"answer":"A","note":null},{"no":240,"type":"single","question":"(  )是最大的政治，决定事业兴衰成败。","options":["A. 就业","B. 民心","C. 人民","D. 民主"],"answer":"B","note":null},{"no":241,"type":"single","question":"人民在一个国家的地位是由这个国家的(  )决定的。","options":["A. 政权性质","B. 社会性质","C. 政治体制","D. 基本国情"],"answer":"A","note":null},{"no":242,"type":"single","question":"社会主义国家是由无产阶级建立和领导的，第一次真正实现了(   )。","options":["A. 党的领导","B. 人民当家作主","C. 民主集中制","D. 人民监督"],"answer":"B","note":null},{"no":243,"type":"single","question":"(  )是党执政的最大底气，也是党执政最深厚的根基。","options":["A. 民主","B. 人民当家作主","C. 全面依法治国","D. 人民"],"answer":"D","note":null},{"no":244,"type":"single","question":"(  )是一个政党观察、认识、处理政治问题的立足点，反映了这个政党的世界观、方法论和执政理念，体现了这个政党的根本属性。","options":["A. 人民立场","B. 政治立场","C. 社会立场","D. 党性立场"],"answer":"B","note":null},{"no":245,"type":"single","question":"(  )是中国共产党的根本政治立场，是我们党区别于其他政党的显著标志。","options":["A. 人民代表大会制度","B. 人民立场","C. 人民当家作主","D. 民主集中制"],"answer":"B","note":null},{"no":246,"type":"single","question":"(  )，就要始终保持党同人民群众的血肉联系。","options":["A. 坚持人民当家作主","B. 坚持党的性质","C. 坚持党的宗旨","D. 坚持人民立场"],"answer":"D","note":null},{"no":247,"type":"single","question":"(  )，是我们党百年奋斗的宝贵历史经验，也是新时代党治国理政的根本价值取向。","options":["A. 坚持社会主义道路","B. 坚持党的性质","C. 坚持人民至上","D. 坚持人民立场"],"answer":"C","note":null},{"no":248,"type":"single","question":"(  )就是党的奋斗目标，这体现了我国社会主要矛盾转化对党和国家工作的新要求。","options":["A. 人民对美好生活的向往","B. 共同富裕","C. 中华民族伟大复兴","D. 社会主义现代化强国"],"answer":"A","note":null},{"no":249,"type":"single","question":"依靠人民创造历史伟业，必须尊重(  )地位。","options":["A. 人民主体","B. 党的领导","C. 法治中国","D. 人民群众"],"answer":"A","note":null},{"no":250,"type":"single","question":"依靠人民创造历史伟业，必须尊重人民(  )。","options":["A. 斗争精神","B. 首创精神","C. 主体地位","D. 社会地位"],"answer":"B","note":null},{"no":251,"type":"single","question":"(  )是我们党做好一切工作的价值取向和根本标准。","options":["A. 人民至上","B. 人民主体地位","C. 社会发展","D. 让群众满意"],"answer":"D","note":null},{"no":252,"type":"single","question":"习近平指出:“(  )是我们党的生命线和根本工作路线，是我们党永葆青春活力和战斗力的重要传家宝。”","options":["A. 群众路线","B. 思想路线","C. 组织路线","D. 政治路线"],"answer":"A","note":null},{"no":253,"type":"single","question":"(   )是获得真知灼见的源头活水，是贯彻群众路线的有效途径。","options":["A. 社会实践","B. 调查研究","C. 马克思主义","D. 中国特色社会主义"],"answer":"B","note":null},{"no":254,"type":"single","question":"(  )是中国特色社会主义的本质要求，是中国式现代化的重要特征。","options":["A. 中国共产党的领导","B. 社会主义制度","C. 马克思主义","D. 共同富裕"],"answer":"D","note":null},{"no":255,"type":"single","question":"(  )确立了马克思主义政党的最高目标是实现共产主义，并把实现人的自由而全面发展作为共产主义的本质特征。","options":["A. 《德意志意识形态》","B. 《共产党宣言》","C. 《资本论》","D. 《反杜林论》"],"answer":"B","note":null},{"no":256,"type":"single","question":"习近平指出:“现代化的最终目标是实现(  )的发展。”","options":["A. 人自由而全面","B. 社会主义现代化","C. 共同富裕","D. 中华民族伟大复兴"],"answer":"A","note":null},{"no":257,"type":"multi","question":"为了让人民过上好日子，我们党团结带领人民实现（），成立了新中国。","options":["A. 民族独立","B. 人民解放","C. 人民幸福","D. 国家富强"],"answer":"AB","note":null},{"no":258,"type":"multi","question":"江山就是人民，人民就是江山，这是由我们党的(  )决定的。","options":["A. 性质","B. 宗旨","C. 原则","D. 纲领"],"answer":"AB","note":null},{"no":259,"type":"multi","question":"坚持人民立场，就要始终牢记党的(  )。","options":["A. 初心","B. 使命","C. 性质","D. 宗旨"],"answer":"AB","note":null},{"no":260,"type":"multi","question":"(  )是中国共产党人的初心和使命，是激励一代代中国共产党人前仆后继、英勇奋斗的根本动力。","options":["A. 为中国人民谋幸福","B. 为中华民族谋复兴","C. 为人类谋解放","D. 为世界谋大同"],"answer":"AB","note":null},{"no":261,"type":"multi","question":"坚持人民立场，就要(  )。","options":["A. 热爱人民","B. 尊重人民","C. 回报人民","D. 敬畏人民"],"answer":"ABD","note":null},{"no":262,"type":"multi","question":"人民是我们党的(  )。","options":["A. 生存之本","B. 生命之根","C. 执政之基","D. 力量之源"],"answer":"BCD","note":null},{"no":263,"type":"multi","question":"不论过去、现在和将来，我们都要坚持(  )，把党的，把群众路线贯彻到治国理政全部活动之中。","options":["A. 一切为了群众","B. 一切依靠群众","C. 从群众中来到群众中去","D. 正确主张变为群众的自觉行动"],"answer":"ABCD","note":null},{"no":264,"type":"multi","question":"要始终(  )，作为检验工作的最终评判标准。","options":["A. 把人民放在心中最高位置","B. 树立正确的政绩观","C. 以人民满意不满意","D. 人民生活幸福程度"],"answer":"ABC","note":null},{"no":265,"type":"multi","question":"只要我们始终，(  )，就没有克服不了的困难，就没有越不过的险滩，就没有完成不了的任务。","options":["A. 保持同人民群众的血肉联系","B. 紧紧依靠人民","C. 不断造福人民","D. 牢牢植根人民"],"answer":"ABCD","note":null},{"no":266,"type":"single","question":"(  )是决定当代中国命运的关键一招，也是决定实现’两个一百年’奋斗目标、实现中华民族伟大复兴的关键一招。","options":["A. 中国式现代化","B. 中国特色社会主义","C. 改革开放","D. 小康社会"],"answer":"C","note":null},{"no":267,"type":"single","question":"(  )是坚持和发展中国特色社会主义的必由之路。","options":["A. 改革开放","B. 中国共产党领导","C. 坚持以人民为中心","D. 社会主义道路"],"answer":"A","note":null},{"no":268,"type":"single","question":"(  )是完成新时代目标任务的必然要求。","options":["A. 全面建设社会主义现代化国家","B. 全面深化改革开放","C. 全面依法治国","D. 全面从严治党"],"answer":"B","note":null},{"no":269,"type":"single","question":"坚持和完善社会主义基本经济制度，充分发挥(  )在资源配置中的决定性作用……","options":["A. 市场","B. 社会","C. 政府","D. 组织"],"answer":"A","note":null},{"no":270,"type":"single","question":"(  )，是开启改革开放事业的思想前提，也是新时代全面深化改革开放的思想前提。","options":["A. 解放思想","B. 实事求是","C. 与时俱进","D. 开拓创新"],"answer":"A","note":null},{"no":271,"type":"single","question":"(  )，是改革开放的鲜明特征和首要任务。","options":["A. 解放思想","B. 人民生活水平提高","C. 解放和发展社会生产力","D. 共同富裕"],"answer":"C","note":null},{"no":272,"type":"single","question":"(  )，是一个国家现代化的重要标志。","options":["A. 国家治理体系和治理能力现代化","B. 实现全体人民共同富裕","C. 社会主义大繁荣大发展","D. 进入世界发达国家行列"],"answer":"A","note":null},{"no":273,"type":"single","question":"推进国家治理体系和治理能力现代化，必须坚定中国特色社会主义(  )。","options":["A. 道路自信","B. 理论自信","C. 制度自信","D. 文化自信"],"answer":"C","note":null},{"no":274,"type":"single","question":"(  )是党和人民在长期实践探索中形成的，具有多方面的显著优势。","options":["A. 科学社会主义","B. 中国式现代化","C. 中国特色社会主义道路","D. 中国特色社会主义制度"],"answer":"D","note":null},{"no":275,"type":"single","question":"(  )，是富有中国特色、符合中国国情的改革方法。","options":["A. 顶层设计","B. 摸着石头过河","C. “猫论”","D. 全面深化改革开放"],"answer":"B","note":null},{"no":276,"type":"single","question":"(  )，是新时代坚持和发展中国特色社会主义的根本动力。","options":["A. 全面深化改革开放","B. 共同富裕","C. 中华民族伟大复兴","D. 社会主义现代化强国"],"answer":"A","note":null},{"no":277,"type":"single","question":"历史唯物主义认为，(  )是推动人类社会发展最活跃最具有革命性的因素……","options":["A. 生产力","B. 党的领导","C. 社会变革","D. 人民群众"],"answer":"A","note":null},{"no":278,"type":"single","question":"党的二十大围绕全面建成社会主义现代化强国、(  )全面推进中华民族伟大复兴的中心任务，对全面深化改革开放作出新的部署。","options":["A. 以社会主义现代化强国","B. 以中国式现代化","C. 以人民共同富裕","D. 以人民主体地位"],"answer":"B","note":null},{"no":279,"type":"single","question":"社会主义事业是一项全新事业，没有现成的方案和固定的模式，只有坚持(  )基本原则，结合新的实际大胆探索创新，才能把社会主义事业推向前进。","options":["A. 科学社会主义","B. 人民主体地位","C. 中国特色社会主义","D. 中国共产党的领导"],"answer":"A","note":null},{"no":280,"type":"single","question":"2013年11月，（  ）通过《中共中央关于全面深化改革若干重大问题的决定》，对全面深化改革进行总体擘画，确定了全面深化改革的总目标……党的十九届三中全会","options":["A. 党的十八届三中全会","B. 党的十八届五中全会","C. 党的十九届三中全会","D. 党的十九届六中全会"],"answer":"A","note":null},{"no":281,"type":"multi","question":"只有社会主义才能救中国，只有改革开放才能(  )。","options":["A. 发展中国","B. 发展世界","C. 发展社会主义","D. 发展马克思主义"],"answer":"ACD","note":null},{"no":282,"type":"multi","question":"全面深化改革开放是一场(  )。","options":["A. 思想理论的深刻变革","B. 改革组织方式的深刻变革","C. 国家制度和治理体系的深刻变革","D. 人民广泛参与的深刻变革"],"answer":"ABCD","note":null},{"no":283,"type":"multi","question":"全面深化改革开放是在多年改革开放基础上的深化，是一场(  )的制度创新。","options":["A. 全面","B. 系统","C. 整体","D. 多元"],"answer":"ABC","note":null},{"no":284,"type":"multi","question":"新时代的改革开放是全方位、深层次、根本性的，取得的成就是(  )的。","options":["A. 历史性","B. 现实性","C. 革命性","D. 开创性"],"answer":"ACD","note":null},{"no":285,"type":"multi","question":"社会主义改革开放的出发点和落脚点，是(  )。","options":["A. 为了更好实现和维护人民利益","B. 为了让老百姓过上好日子","C. 为了巩固中国共产党的执政之基","D. 为了实现中华民族伟大复兴"],"answer":"AB","note":null},{"no":286,"type":"multi","question":"要把(  )作为根本标准，审视我们的各项改革开放措施，哪里不符合人民需要，哪里就需要调整……","options":["A. 社会发不发展","B. 人民满意不满意","C. 高兴不高兴","D. 现代化能否实现"],"answer":"BC","note":null},{"no":287,"type":"multi","question":"必须(  )既是改革的目的，又是改革的条件。","options":["A. 有利于人民生活水平提高","B. 有利于进一步解放思想","C. 进一步解放和发展社会生产力","D. 进一步解放和增强社会活力"],"answer":"BCD","note":null},{"no":288,"type":"multi","question":"全面深化改革总目标是:(  )。","options":["A. 完善和发展中国特色社会主义制度","B. 推进国家治理体系和治理能力现代化","C. 以中国式现代化推进中华民族伟大复兴","D. 实现共同富裕"],"answer":"AB","note":null},{"no":289,"type":"multi","question":"(  )是我国社会主义现代化建设的三个重要支点。","options":["A. 改革","B. 发展","C. 稳定","D. 共赢"],"answer":"ABC","note":null},{"no":290,"type":"multi","question":"(  )如鸟之两翼、车之两轮，相辅相成、相伴而生。","options":["A. 改革","B. 发展","C. 稳定","D. 法治"],"answer":"AD","note":null},{"no":291,"type":"multi","question":"当前改革又到了一个新的历史关头，要(  )……","options":["A. 立足新发展阶段","B. 贯彻新发展理念","C. 构建新发展格局","D. 推动高质量发展"],"answer":"ABCD","note":null},{"no":292,"type":"multi","question":"中国将坚持实施(  )对外开放，坚持走中国式现代化道路，建设更高水平开放型经济新体制……","options":["A. 更大范围","B. 更宽领域","C. 更深层次","D. 更多方面"],"answer":"ABC","note":null},{"no":293,"type":"single","question":"我们乘势而上开启全面建设社会主义现代化国家新征程、向第二个百年奋斗目标进军，这标志着我国进入了一个（  ）。","options":["A. 新发展时期","B. 新发展阶段","C. 新发展格局","D. 新发展方位"],"answer":"B","note":null},{"no":294,"type":"single","question":"（ ）是化解我国经济发展面临困难和矛盾的重大举措。","options":["A. 供给侧结构性改革","B. 健全民主法制","C. 社会公平正义","D. 人民主体地位"],"answer":"A","note":null},{"no":295,"type":"single","question":"建设充分发挥（   ），更好发挥政府作用的经济体制","options":["A. 市场作用","B. 服务业动能","C. 社会作用","D. 社会福利补给"],"answer":"A","note":null},{"no":296,"type":"multi","question":"促进区域协调发展，（  ）。","options":["A. 是贯彻新发展理念的重要内容，也是实现高质量发展的必然要求","B. 要深入实施区域协调发展战略、区域重大战略、主体功能区战略","C. 要推进以人为核心的新型城镇化，加快农业转移人口市民化。","D. 要求各地区在经济发展上达到同一水平"],"answer":"ABC","note":null},{"no":297,"type":"multi","question":"构建（ ）的新发展格局","options":["A. 以国际大循环为主体","B. 以国内大循环为主体","C. 国内国际双循环相互促进","D. 国内国际双循环独立运行"],"answer":"BC","note":null},{"no":298,"type":"judge","question":"高质量发展是全面建设社会主义现代化国家的首要任务，是遵循经济规律发展的必然要求。","options":[],"answer":"对","note":null},{"no":299,"type":"judge","question":"公有制经济包括国有经济和集体经济，还包括混合所有制经济中的国有成分和集体成分。","options":[],"answer":"对","note":null},{"no":300,"type":"judge","question":"非公有制经济不是社会主义市场经济的组成部分。","options":[],"answer":"错","note":null},{"no":301,"type":"single","question":"(        )是实现高质量发展的指导原则。","options":["A. 新发展阶段","B. 新发展方位","C. 新发展理念","D. 供给侧改革"],"answer":"C","note":null},{"no":302,"type":"single","question":"党的十八大以来，我国经济已由高速增长阶段转向(        )阶段。","options":["A. 世界级市场","B. 高水平开放","C. 强动力转换","D. 高质量发展"],"answer":"D","note":null},{"no":303,"type":"single","question":"(        )是引领发展的第一动力。","options":["A. 劳动力","B. 资本","C. 科技","D. 创新"],"answer":"D","note":null},{"no":304,"type":"single","question":"(        )是发展行动的先导。","options":["A. 发展理念","B. 发展格局","C. 发展方向","D. 发展策略"],"answer":"A","note":null},{"no":305,"type":"single","question":"推动高质量发展，要更好统筹质的有效提升和量的合理增长，始终坚持质量第一、(        )优先。","options":["A. 利益","B. 速度","C. 人才","D. 效益"],"answer":"D","note":null},{"no":306,"type":"single","question":"坚持和完善(        )是实现高质量发展的保障。","options":["A. 社会主义根本政治制度","B. 社会主义基本政治制度","C. 社会主义根本经济制度","D. 社会主义基本经济制度"],"answer":"D","note":null},{"no":307,"type":"single","question":"(        )是中国特色社会主义的重要物质基础和政治基础，是我们党执政兴国的重要支柱和依靠力量。","options":["A. 国有企业","B. 合资企业","C. 私营企业","D. 集体企业"],"answer":"A","note":null},{"no":308,"type":"single","question":"我国宪法明确规定，坚持(        )为主体，多种分配方式并存的分配制度。","options":["A. 按劳分配","B. 按资分配","C. 按需分配","D. 按生产要素分配"],"answer":"A","note":null},{"no":309,"type":"single","question":"构建高水平社会主义市场经济体制，关键是要(        )。","options":["A. 处理好政府和市场的关系","B. 处理好当前利益和长远利益的关系","C. 处理好中国和外国的关系","D. 处理好效率和公平的关系"],"answer":"A","note":null},{"no":310,"type":"single","question":"在社会主义市场经济体制下，(        )是带动各类生产要素集聚配置的重要纽带。","options":["A. 政府","B. 市场","C. 资本","D. 人才"],"answer":"C","note":null},{"no":311,"type":"single","question":"(        )是把握未来发展主动权的先手棋。","options":["A. 进入新发展时期","B. 变更新发展方位","C. 构建新发展格局","D. 适应新发展阶段"],"answer":"C","note":null},{"no":312,"type":"single","question":"在当前国际形势充满不稳定性不确定性的背景下，(        )，充分挖掘内需潜力，有利于化解外部冲击和外需下降带来的影响。","options":["A. 立足国内，依托国内大市场","B. 立足国内，依托国际大市场","C. 立足国际，依托国内大市场","D. 立足国际，依托国际大市场"],"answer":"A","note":null},{"no":313,"type":"single","question":"构建新发展格局必须发挥比较优势，以(        )吸引全球资源要素。","options":["A. 国内大循环","B. 国内小循环","C. 国际大循环","D. 国际小循环"],"answer":"A","note":null},{"no":314,"type":"single","question":"构建新发展格局最本质的特征是实现高水平的自立自强。(        )自立自强是我国经济生存和发展的基础，是畅通国内国际双循环、促进我国发展大局的关键。","options":["A. 智能","B. 科技","C. 创新","D. 研究"],"answer":"B","note":null},{"no":315,"type":"single","question":"(        )是一国经济的立身之本、财富之源，是构筑未来发展战略优势的重要支撑。","options":["A. 个体经济","B. 国有经济","C. 实体经济","D. 虚体经济"],"answer":"C","note":null},{"no":316,"type":"single","question":"建设充分发挥(        )，更好发挥政府作用的经济体制。","options":["A. 市场作用","B. 服务业功能","C. 社会作用","D. 社会福利补给"],"answer":"A","note":null},{"no":317,"type":"single","question":"加快建设以(        )为支撑的现代化产业体系，关系我们在未来发展和国际竞争中赢得战略主动。","options":["A. 个体经济","B. 国有经济","C. 实体经济","D. 虚体经济"],"answer":"C","note":null},{"no":318,"type":"single","question":"在全面建设社会主义现代化国家的新征程上，要把建设(        )作为经济现代化的重要任务。","options":["A. 现代化产业体系","B. 现代化农业体系","C. 现代化工业体系","D. 现代化服务业体系"],"answer":"A","note":null},{"no":319,"type":"single","question":"关于实施乡村振兴战略，下列说法不正确的是(        )","options":["A. 产业兴旺、生态宜居、乡风文明、治理有效、生活富裕是总要求","B. 农业农村现代化是总目标","C. 坚持农业农村优先发展是总方针","D. 建立健全城乡融合发展体制机制和政策体系是政治保障"],"answer":"D","note":null},{"no":320,"type":"single","question":"以城市群、都市圈为依托构建大中小城市协调发展格局，推进以(        )为重要载体的城镇化建设。","options":["A. 都市","B. 县城","C. 乡镇"],"answer":"B","note":null},{"no":321,"type":"multi","question":"新发展阶段是(        )。","options":["A. 我国社会主义初级阶段历史进程中的一个重要阶段","B. 中国共产党带领人民迎来从站起来、富起来到强起来历史性跨越的新阶段","C. 全面建设小康社会、向第二个百年奋斗目标进军的重要阶段","D. 全面建设社会主义现代化国家、向第二个百年奋斗目标进军的重要阶段"],"answer":"ABD","note":null},{"no":322,"type":"multi","question":"全面地理解和把握新发展理念，(        )","options":["A. 要从根本宗旨上把握新发展理念，坚持以人民为中心的发展思想","B. 要从问题导向上把握新发展理念，切实解决发展不平衡不充分问题","C. 要从忧患意识上把握新发展理念，下好先手棋，打好主动仗","D. 新发展理念是引领我国发展全局深刻变革的科学指引"],"answer":"ABCD","note":null},{"no":323,"type":"multi","question":"高质量发展的重大战略意义是(        ).","options":["A. 高质量发展为全面建设社会主义现代化国家提供更为坚实的物质基础","B. 高质量发展是不断满足人民对美好生活需要的重要保证","C. 高质量发展是维护国家长治久安的必然要求","D. 高质量发展是社会和谐稳定发展的重要前提"],"answer":"ABC","note":null},{"no":324,"type":"multi","question":"社会主义基本经济制度的新概括，包括(        )等方面，反映了我国社会主义经济活动的主要方面、主要过程，是相互联系、相互支持、相互促进的内在统一整体。","options":["A. 所有制","B. 分配制度","C. 资源配置体制机制","D. 公有制"],"answer":"ABC","note":null},{"no":325,"type":"multi","question":"公有制经济包括(        )。","options":["A. 国有经济","B. 集体经济","C. 混合所有制经济中的国有成分","D. 混合所有制经济中的集体成分"],"answer":"ABCD","note":null},{"no":326,"type":"multi","question":"构建新发展格局是(        )。","options":["A. 把握未来发展主动权的先手棋","B. 开放的国内国际双循环，不是封闭的国内单循环","C. 以全国统一大市场基础上的国内大循环为主体，不是各地都搞自我小循环","D. 事关全局的系统性、深层次变革，是适应我国发展新阶段要求、塑造国际合作和竞争新优势的必然选择"],"answer":"ABCD","note":null},{"no":327,"type":"multi","question":"构建新发展格局必须保证经济循环的畅通无阻，实现(        )各环节有机衔接。","options":["A. 生产","B. 分配","C. 流通","D. 消费"],"answer":"ABCD","note":null},{"no":328,"type":"multi","question":"建设现代化产业体系要(        )，加快发展数字经济以及构建现代化基础设施体系。【P130-131】","options":["A. 巩固优势产业领先地位","B. 大力发展战略性新兴产业","C. 构建优质高效的服务业新体系","D. 发展现代流通产业"],"answer":"ABCD","note":null},{"no":329,"type":"multi","question":"全面实施乡村振兴战略是一项艰巨复杂的事业，要处理好(        )。","options":["A. 长期目标和短期目标的关系","B. 顶层设计和基层探索的关系","C. 充分发挥市场决定性作用和更好发挥政府作用的关系","D. 增强群众获得感和适应发展阶段的关系"],"answer":"ABCD","note":null},{"no":330,"type":"multi","question":"促进区域协调发展，(        )。【P133-134】","options":["A. 是贯彻新发展理念的重要内容，也是实现高质量发展的必然要求","B. 要深入实施区域协调发展战略、区域重大战略、主体功能区战略","C. 要推进以人为核心的新型城镇化，加快农业转移人口市民化","D. 要求各地区在经济发展上达到同一水平"],"answer":"ABC","note":null},{"no":331,"type":"judge","question":"贯彻新发展理念是关系我国发展全局的一场深刻变革。(        )","options":[],"answer":"对","note":null},{"no":332,"type":"judge","question":"坚持全民共享、全面共享、共建共享、渐进共享，不断推进全体人民共同富裕(        )","options":[],"answer":"对","note":null},{"no":333,"type":"judge","question":"高质量发展是全面建设社会主义现代化国家的首要任务，是遵循经济规律发展的必然要求。(        )","options":[],"answer":"对","note":null},{"no":334,"type":"judge","question":"社会主义基本经济制度既体现了社会主义制度优越性、又同我国社会主义初级阶段社会生产力发展水平相适应，是党和人民的伟大创造。(        )","options":[],"answer":"对","note":null},{"no":335,"type":"judge","question":"公有制经济和非公有制经济都是社会主义市场经济的重要组成部分，都是我国经济社会发展的重要基础。要毫不动摇巩固和发展公有制经济，毫不动摇鼓励、支持、引导非公有制经济发展。(        )","options":[],"answer":"对","note":null},{"no":336,"type":"judge","question":"坚持和完善基本分配制度，要努力推动居民收入增长和经济增长同步、劳动报酬提高和劳动生产率提高同步。(        )","options":[],"answer":"对","note":null},{"no":337,"type":"judge","question":"以习近平同志为核心的党中央提出使市场在资源配置中起决定性作用，更好发挥政府作用。(        )","options":[],"answer":"对","note":null},{"no":338,"type":"judge","question":"我国将立足新发展阶段，贯穿新发展理念，积极构建以国际大循环为主体、国内国际双循环相互促进的新发展格局。(        )","options":[],"answer":"错","note":null},{"no":339,"type":"judge","question":"建设现代化经济体系是我国发展的战略目标，是推动高质量发展、全面提高经济整体竞争力的必然要求。(        )","options":[],"answer":"对","note":null},{"no":340,"type":"judge","question":"全面建设社会主义现代化国家，最艰巨最繁重的任务依然在农村，最广泛最深厚的基础依然在农村。(        )","options":[],"answer":"对","note":null},{"no":341,"type":"single","question":"我国是工人阶级领导的、以工农联盟为基础的(  )的社会主义国家，国家一切权力属于人民。","options":["A. 人民民主专政","B. 人民当家作主","C. 中国共产党领导","D. 民主专政"],"answer":"A","note":null},{"no":342,"type":"single","question":"(  )是人民当家作主和依法治国的根本保证.","options":["A. 人民民主","B. 党的领导","C. 宪法","D. 全过程民主"],"answer":"B","note":null},{"no":343,"type":"single","question":"人民当家作主是社会主义民主政治的本质特征，(    )是党领导人民治理国家的基本方式.","options":["A. 依法治国","B. 坚持系统观念","C. 全过程民主","D. 民主集中制"],"answer":"A","note":null},{"no":344,"type":"multi","question":"人民民主是社会主义的生命，没有民主（  ）。","options":["A. 就没有社会主义","B. 就没有社会主义的现代化","C. 就没有中华民族伟大复兴","D. 就没有人民群众"],"answer":"ABC","note":null},{"no":345,"type":"multi","question":"（   ）构成我国的基本政治制度。","options":["A. 中国共产党领导的多党合作和政治协商制度","B. 民族区域自治制度","C. 基层群众自治制度","D. 人民代表大会制度"],"answer":"ABC","note":null},{"no":346,"type":"judge","question":"坚持走中国特色社会主义政治发展道路，全面发展全过程人民民主，社会主义民主政治制度化、规范化、程序化全面推进。","options":[],"answer":"对","note":null},{"no":347,"type":"single","question":"（  ）是党克敌制胜、执政兴国的重要法宝，是团结海内外全体中华儿女实现中华民族伟大复兴的重要法宝。","options":["A. 协商民主","B. 统一战线","C. 全过程人民民主","D. 实现中华民族伟大复兴"],"answer":"B","note":null},{"no":348,"type":"single","question":"（   ）是统一战线最核心、最根本的问题。","options":["A. 大团结大联合","B. 广交朋友","C. 凝聚人心","D. 坚持党的领导"],"answer":"D","note":null},{"no":349,"type":"single","question":"统战工作的关键是要(   )。","options":["A. 坚持求同存异","B. 坚持党的领导","C. 坚持同一性","D. 坚持多样性"],"answer":"A","note":null},{"no":350,"type":"multi","question":"屮国特色社会主义政治制度（  ）。","options":["A. 既把握了长期形成的历史传承，又把握了走过的发展道路","B. 把握了现实要求、着眼解决现实问题","C. 注重历史和现实、理论和实践、形式和内容有机统一","D. 具有鲜明的中国特色、民族特色、时代特色"],"answer":"ABCD","note":null},{"no":351,"type":"multi","question":"中国特色社会主义政治制度的巨大优势体现在（  ）。","options":["A. 能够有效保证人民享有更加广泛的权利和自由","B. 能够有效调节国家政治关系，形成安定团结的政治局面","C. 能够集中力量办大事，有效促进社会生产力解放和发展","D. 能够有效维护国家独立自主,有力维护国家主权、安全、发展利益"],"answer":"ABCD","note":null},{"no":352,"type":"judge","question":"人民民主是社会主义的生命，没有民主就没有社会主义。（     ）。","options":[],"answer":"对","note":null},{"no":353,"type":"judge","question":"中国共产党领导的多党合作和政治协商制度、民族区域自治制度以及基层群众自治制度构成我国的根本政治制度。（     ）","options":[],"answer":"错","note":null},{"no":354,"type":"single","question":".社会主义民主的实质是（   ）。","options":["A. 民主集中制","B. 人民当家作主","C. 人民代表大会制度","D. 中华民族大团结"],"answer":"B","note":null},{"no":355,"type":"single","question":"一个国家是不是民主，应该由这个国家的（   ）来评判，而不应该由外部少数人指手画脚来评判。","options":["A. 人民","B. 执政党","C. 社会团体","D. 国家性质"],"answer":"A","note":null},{"no":356,"type":"single","question":"（   ）是社会主义的生命，没有民主就没有社会主义。","options":["A. 人民民主","B. 人民当家作主","C. 以人民为中心","D. 坚持人民的主体地位"],"answer":"A","note":null},{"no":357,"type":"multi","question":"中华人民共和国的一切权力属于人民，人民行使国家权力的机关是（）。","options":["A. 全国人民代表大会","B. 地方各级人民代表大会","C. 国务院","D. 人民代表"],"answer":"AB","note":null},{"no":358,"type":"multi","question":"全过程人民民主是最真实的民主,具体体现在（ ）。","options":["A. 把党的主张、国家意志、人民意愿紧密融合在一起，彰显了人民民主的真实性","B. 真实反映人民的期盼、希望和诉求","C. 人民的意愿和呼声，经过民主决策程序成为党和国家的方针政策","D. 真真切切落实到国家政治生活和社会生活各方面"],"answer":"BCD","note":null},{"no":359,"type":"judge","question":"我国的各项国家制度都是围绕人民当家作主构建的，国家治理体系都是围绕实现人民当家作主运转的。（     ）","options":[],"answer":"对","note":null},{"no":360,"type":"single","question":"(  )是坚持和发展中国特色社会主义的本质要求和重要保障。","options":["A. 全面依法治国","B. 民主法治","C. 改革开放","D. 人民监督"],"answer":"A","note":null},{"no":361,"type":"single","question":"(  )通过《中共中央关于全面推进依法治国若干重大问题的决定》，规划了全面依法治国的总蓝图、路线图、施工图。","options":["A. 党的十八大","B. 党的十八届三中全会","C. 党的十八届四中全会","D. 党的十九大"],"answer":"C","note":null},{"no":362,"type":"single","question":"(  )是中国特色社会主义最本质的特征，是社会主义法治最根本的保证。","options":["A. 文明法治","B. 党的领导","C. 人民民主","D. 繁荣发展"],"answer":"B","note":null},{"no":363,"type":"single","question":"(  )是中国特色社会主义法治体系的理论指导和学理支撑，是全面推进依法治国的行动指南。","options":["A. 社会主义制度","B. 社会主义经济","C. 中国特色社会主义法治理论","D. 社会主义法治"],"answer":"C","note":null},{"no":364,"type":"single","question":"全面依法治国最广泛、最深厚的基础是(  )","options":["A. 中国共产党","B. 法律工作者","C. 党员","D. 人民"],"answer":"D","note":null},{"no":365,"type":"single","question":"推进全面依法治国，根本目的是依法保障(  )权益。","options":["A. 工人阶级","B. 党员干部","C. 中国共产党","D. 人民"],"answer":"D","note":null},{"no":366,"type":"single","question":"(  )是国家法律的先导和指引，是立法的依据和执法司法的重要指导，要通过法律保障党的政策有效实施。","options":["A. 党的政策","B. 中国特色社会主义制度","C. 人民地位","D. 社会主义现代化国家"],"answer":"A","note":null},{"no":367,"type":"single","question":"(  )明确提出形成中国特色社会主义法律体系的重大任务。","options":["A. 党的十五大","B. 党的十八大","C. 党的十九届六中全会","D. 党的二十大"],"answer":"A","note":null},{"no":368,"type":"single","question":"(  )是国家的根本法，是治国安邦的总章程，是党和人民意志的集中体现，是国家各种制度和法律法规的总依据，具有最高的法律地位、法律权威、法律效力。","options":["A. 民法","B. 刑法","C. 宪法","D. 行政诉讼法"],"answer":"C","note":null},{"no":369,"type":"single","question":"法律规范体系是以(  )为核心，由部门齐全、结构严谨、内部协调、体例科学、调整有效的法律规范所构成的有机整体。","options":["A. 民法","B. 刑法","C. 宪法","D. 行政诉讼法"],"answer":"C","note":null},{"no":370,"type":"multi","question":"中国特色社会主义法治道路的核心要义，就是要(  )，贯彻中国特色社会主义法治理论。","options":["A. 坚持党的领导","B. 坚持中国特色社会主义制度","C. 坚持人民主体地位","D. 坚持全面依法治国"],"answer":"AB","note":null},{"no":371,"type":"multi","question":"习近平指出:“全面依法治国必须正确处理(  )的关系。”","options":["A. 政治和法治","B. 改革和法治","C. 依法治国和以德治国","D. 依法治国和依规治党"],"answer":"ABCD","note":null},{"no":372,"type":"single","question":"把(  )纳入中国特色社会主义法治体系，是我国法治区别于其他国家法治的鲜明特征。","options":["A. 中国共产党纪律处分条例","B. 党内法规体系","C. 中国共产党领导","D. 全面依法治国"],"answer":"B","note":null},{"no":373,"type":"single","question":"(  )首次提出“推进法治中国建设”的目标并作出重大任务部署，更加突出法治国家、法治政府、法治社会的有机统一","options":["A. 党的十八大","B. 党的十八届二中全会","C. 党的十八届三中全会","D. 党的十九大"],"answer":"C","note":null},{"no":374,"type":"single","question":"(  )是维护社会公平正义的最后一道防线。","options":["A. 科学立法","B. 严格执法","C. 公正司法","D. 全民守法"],"answer":"C","note":null},{"no":375,"type":"single","question":"到(  )，法治国家、法治政府、法治社会基本建成，中国特色社会主义法治体系基本形成。","options":["A. 2020年","B. 2025年","C. 2035年","D. 2050年"],"answer":"C","note":null},{"no":376,"type":"single","question":"党内法规体系是以党章为根本，以(  )为核心，以准则、条例等中央党内法规为主干，以部委党内法规、地方党内法规为重要组成部分。","options":["A. 民主集中制","B. 人民代表大会","C. 社会主义","D. 人民主体地位"],"answer":"A","note":null},{"no":377,"type":"multi","question":"中国特色社会主义法治体系是由(  )和党内法规体系构成的统一体。","options":["A. 法律规范体系","B. 法治实施体系","C. 法治监督体系","D. 法治保障体系"],"answer":"ABCD","note":null},{"no":378,"type":"multi","question":"(  )，是坚持和发展中国特色社会主义的内在要求。","options":["A. 建设中国特色社会主义法治体系","B. 建设社会主义法治国家","C. 建设社会主义现代化国家","D. 建设中国特色社会主义经济体系"],"answer":"AB","note":null},{"no":379,"type":"multi","question":"(  )，三者相互联系、内在统一，是法治中国建设的三大支柱。","options":["A. 法治国家","B. 法治政府","C. 法治社会","D. 法治个人"],"answer":"ABC","note":null},{"no":380,"type":"multi","question":"全面推进依法治国总目标是(  )。","options":["A. 建设中国特色社会主义法治体系","B. 建设社会主义现代化国家","C. 建设社会主义法治国家","D. 建设社会主义法治政府"],"answer":"AC","note":null},{"no":381,"type":"single","question":"(  )是更基础、更广泛、更深厚的自信，是一个国家、一个民族发展中最基本、最深沉、最持久的力量。","options":["A. 道路自信","B. 理论自信","C. 制度自信","D. 文化自信"],"answer":"D","note":null},{"no":382,"type":"single","question":"建设社会主义文化强国、推动社会主义文化繁荣兴盛，关键在于坚定(  )。","options":["A. 中华民族伟大复兴的目标","B. 马克思主义信仰","C. 中国特色社会主义文化自信","D. 社会主义发展方向"],"answer":"C","note":null},{"no":383,"type":"single","question":"(  )是我们坚定文化自信的深厚基础。","options":["A. 社会主义先进文化","B. 中华优秀传统文化","C. 革命文化","D. 中国特色社会主义文化"],"answer":"B","note":null},{"no":384,"type":"single","question":"(  )是我们坚定文化自信的现实基础。","options":["A. 社会主义制度","B. 中华优秀传统文化","C. 中国特色社会主义伟大实践","D. 社会主义法治"],"answer":"C","note":null},{"no":385,"type":"single","question":"(  )是文化的生命所在，是文化的本质特征。","options":["A. 中国共产党领导","B. 人民群众的创作","C. 社会主义文化大发展大繁荣","D. 创新创造"],"answer":"D","note":null},{"no":386,"type":"multi","question":"习近平指出:“中国特色社会主义是(  )全面发展的社会主义。一个没有精神力量的民族难以自立自强，一项没有文化支撑的事业难以持续长久。”","options":["A. 物质文明","B. 精神文明","C. 政治文明","D. 生态文明"],"answer":"AB","note":null},{"no":387,"type":"multi","question":"要坚持中国特色社会主义文化发展道路(  )，推进文化自信自强，增强实现中华民族伟大复兴的精神力量。","options":["A. 发展社会主义先进文化","B. 弘扬革命文化","C. 传承中华优秀传统文化","D. 践行社会主义核心价值观"],"answer":"ABC","note":null},{"no":388,"type":"single","question":"(  )关乎旗帜、关乎道路、关乎国家政治安全，决定文化前进方向和发展道路。","options":["A. 马克思主义信仰","B. 社会主义制度","C. 中国共产党领导","D. 意识形态"],"answer":"D","note":null},{"no":389,"type":"single","question":"建设社会主义文化强国，推动社会主义文化繁荣兴盛，必须坚持(  )在意识形态领域指导地位的根本制度……","options":["A. 马克思主义","B. 中国特色社会主义制度","C. 中国共产党","D. 社会主义现代化国家"],"answer":"A","note":null},{"no":390,"type":"single","question":"(  )是我们立党立国、兴党兴国的根本指导思想。","options":["A. 马克思主义","B. 社会主义核心价值观","C. 中国共产党党章","D. 中国特色社会主义理论体系"],"answer":"A","note":null},{"no":391,"type":"single","question":"坚持用马克思主义特别是(  )武装全党、教育人民、指导实践。","options":["A. 科学社会主义","B. 中国特色社会主义思想","C. 中国化时代化的马克思主义","D. 社会主义核心价值观"],"answer":"C","note":null},{"no":392,"type":"single","question":"(  )是马克思主义中国化时代化最新成果，是当今时代最现实、最鲜活的马克思主义。","options":["A. 中国特色社会主义理论体系","B. 习近平文化思想","C. 习近平新时代中国特色社会主义思想","D. 习近平生态文明思想"],"answer":"C","note":null},{"no":393,"type":"multi","question":"举旗帜，就是要高举(  )的旗帜，坚持不懈用习近平新时代中国特色社会主义思想武装全党、教育人民、推动工作……","options":["A. 马克思主义","B. 中国特色社会主义","C. 中国共产党","D. 社会主义"],"answer":"AB","note":null},{"no":394,"type":"multi","question":"坚持(  )的根本方向，是决定社会主义文化事业前途命运的关键。","options":["A. 为人民服务","B. 为社会主义服务","C. 为实现中华民族伟大复兴","D. 为人类社会发展"],"answer":"AB","note":null},{"no":395,"type":"multi","question":"坚持(  )，是繁荣发展社会主义文化的重要方针。","options":["A. 美美与共","B. 天下大同","C. 百花齐放","D. 百家争鸣"],"answer":"CD","note":null},{"no":396,"type":"single","question":"(  )是人们认识世界、改造世界的重要工具，是推动历史发展和社会进步的重要力量。","options":["A. 马克思主义","B. 哲学社会科学","C. 社会主义制度","D. 社会主义核心价值观"],"answer":"B","note":null},{"no":397,"type":"single","question":"(  )是新闻舆论工作的根本原则，要坚持正确的舆论导向","options":["A. 中国共产党领导","B. 人民当家作主","C. 党性原则","D. 为人民服务"],"answer":"C","note":null},{"no":398,"type":"single","question":"(  )是一个民族赖以维系的精神纽带，是一个国家共同的思想道德基础。","options":["A. 文化","B. 文明","C. 核心价值观","D. 中国精神"],"answer":"C","note":null},{"no":399,"type":"single","question":"要培育和践行社会主义核心价值观,弘扬以(  )为源头的中国共产党人精神谱系，提高全社会文明程度，推动社会主义核心价值观融入经济社会发展和人们生产生活方方面面，更好构筑中国精神、中国价值、中国力量。","options":["A. 中国精神","B. 社会主义核心价值观","C. 伟大建党精神","D. 红船精神"],"answer":"C","note":null},{"no":400,"type":"single","question":"(  )，是全面建设社会主义现代化国家的重要目标，也是建设社会主义文化强国的重大任务。","options":["A. 推动社会文明程度不断提高","B. 坚定文化自信","C. 社会主义文化大发展大繁荣","D. 文化强国建设"],"answer":"A","note":null},{"no":401,"type":"multi","question":"要自觉把马克思主义中国化时代化最新成果贯穿研究阐释全过程，坚持以人民为中心的研究导向，自觉回答(  )，在研究解决事关党和国家全局性、根本性、关键性的重大问题上拿出真本事、取得好成果，把论文写在祖国大地上。","options":["A. 中国之问","B. 世界之问","C. 人民之问","D. 时代之问"],"answer":"ABCD","note":null},{"no":402,"type":"multi","question":"社会主义核心价值观，把涉及国家、社会、公民的价值要求融为一体，回答了我们要(  )的重大问题。","options":["A. 构建什么样的世界","B. 建设什么样的国家","C. 建设什么样的社会","D. 培育什么样的公民"],"answer":"BCD","note":null},{"no":403,"type":"single","question":"(  )是中华文明的智慧结晶和精华所在，是中华民族的根和魂。","options":["A. 社会主义先进文化","B. 中华优秀传统文化","C. 马克思主义","D. 中国革命文化"],"answer":"B","note":null},{"no":404,"type":"single","question":"(  )既是中国先进文化的积极引领者和践行者，又是中华优秀传统文化的忠实传承者和弘扬者。","options":["A. 人民群众","B. 知识分子","C. 社会精英","D. 中国共产党"],"answer":"D","note":null},{"no":405,"type":"single","question":"(  )集中体现了一个国家基于文化而具有的凝聚力和生命力，以及由此产生的吸引力和影响力。","options":["A. 文化软实力","B. 中国精神","C. 社会主义核心价值观","D. 普世价值"],"answer":"A","note":null},{"no":406,"type":"single","question":"一个国家的文化软实力，从根本上说，取决于其(  )的生命力、凝聚力、感召力。","options":["A. 文化","B. 中国精神","C. 核心价值观","D. 民族"],"answer":"C","note":null},{"no":407,"type":"single","question":"讲好中国故事、传播好中国声音,根本在于(  )，以我为主，以理服人，以情动人。","options":["A. 弘扬文化","B. 传播理念","C. 传承精神","D. 影响世界"],"answer":"B","note":null},{"no":408,"type":"single","question":"党的十八大以来，以习近平同志为核心的党中央坚持(  )的发展思想,在发展中保障和改善民生，加强和创新社会治理，人民生活全方位改善,人民获得感幸福感安全感不断增强。","options":["A. 中国共产党领导","B. 社会主义本质","C. 中国特色社会主义制度","D. 以人民为中心"],"answer":"D","note":null},{"no":409,"type":"single","question":"(  )是坚持立党为公、执政为民的本质要求。","options":["A. 中华民族伟大复兴","B. 增进民生福祉","C. 共同富裕","D. 民生"],"answer":"B","note":null},{"no":410,"type":"single","question":"关注(  )本身的发展，是社会主义和资本主义的根本区别之一。","options":["A. 社会","B. 人","C. 公民","D. 经济"],"answer":"B","note":null},{"no":411,"type":"single","question":"中国式现代化是造福人民的现代化，要求把不断(  )放在更加突出的位置。","options":["A. 坚定社会主义制度","B. 推进社会主义发展","C. 增进民生福祉","D. 坚持人民主体地位"],"answer":"C","note":null},{"no":412,"type":"single","question":"(  )，消除绝对贫困，是全面建成小康社会的底线任务,是必须抓紧抓好的第一民生工程。","options":["A. 人民幸福","B. 共同富裕","C. 乡村振兴","D. 打赢脱贫攻坚战"],"answer":"D","note":null},{"no":413,"type":"multi","question":"民生工作离老百姓最近，同老百姓生活最密切，(  )是我们的第一要务。","options":["A. 解决发展问题","B. 改善民生","C. 满足人民生活","D. 促进精神文明建设"],"answer":"AB","note":null},{"no":414,"type":"multi","question":"(  )，是保障和改善民生的工作思路。","options":["A. 坚守底线","B. 突出重点","C. 完善制度","D. 引导预期"],"answer":"ABCD","note":null},{"no":415,"type":"single","question":"(  )是解决民生问题的“总钥匙”。","options":["A. 保障","B. 扶贫","C. 创新","D. 发展"],"answer":"D","note":null},{"no":416,"type":"single","question":"(  )是民生之源，是改善民生、实现发展成果由人民共享最重要最直接的方式。","options":["A. 收入分配","B. 分配制度","C. 社会保障","D. 生活幸福"],"answer":"A","note":null},{"no":417,"type":"single","question":"(  )是促进共同富裕的基础性制度。","options":["A. 经济制度","B. 分配制度","C. 社会制度","D. 政治制度"],"answer":"B","note":null},{"no":418,"type":"single","question":"(  )是最基本的民生，是劳动者赖以生存和发展的基础、共享经济发展成果的基本条件，关系到亿万劳动者及其家庭的切身利益。","options":["A. 社会保障","B. 教育","C. 就业","D. 医疗"],"answer":"C","note":null},{"no":419,"type":"single","question":"(  )是社会文明进步的基础，是民族昌盛和国家富强的重要标志，是促进人的全面发展的必然要求。","options":["A. 改善民生","B. 社会保障体系","C. 人民健康","D. 就业"],"answer":"C","note":null},{"no":420,"type":"multi","question":"中国特色的社会保障体系，是在(  )基础上建立起来的。","options":["A. 坚持社会主义原则","B. 立足中国实际","C. 总结我国社会保障实践经验","D. 学习借鉴国外有益经验"],"answer":"ABCD","note":null},{"no":421,"type":"multi","question":"新时代加强和创新社会治理，要求坚持(  )，探索一条符合中国社会发展实际、更可持续的中国特色社会主义社会治理之路。","options":["A. 系统治理","B. 依法治理","C. 综合治理","D. 源头治理"],"answer":"ABCD","note":null},{"no":422,"type":"single","question":"(  )提出创新社会治理体制，从“社会管理”到“社会治理”，虽然只是一字之差，却意味着社会建设理念、体制和方式的重大变革。","options":["A. 党的十八大","B. 党的十八届三中全会","C. 党的十九届六中全会","D. 党的二十大"],"answer":"B","note":null},{"no":423,"type":"single","question":"(  )是国家治理的基石，城乡社区是社会治理最基本的单元，是党和政府联系、服务居民群众的“最后一公里”。","options":["A. 改善民生","B. 人民当家作主","C. 基层治理","D. 为人民服务"],"answer":"C","note":null},{"no":424,"type":"single","question":"理念是完善社会治理体系的先导，必须坚持(  )的社会治理理念。","options":["A. 科学实效","B. 系统化专业化","C. 共建共治共享","D. 创新协调发展"],"answer":"C","note":null},{"no":425,"type":"single","question":"充分发挥(  )领导核心作用，把党的领导贯穿社会治理全过程各环节。","options":["A. 政府机构","B. 居民社区","C. 基层党组织","D. 中国共产党"],"answer":"C","note":null},{"no":426,"type":"single","question":"社区社会治理成效很大程度取决于(  )能力和水平。","options":["A. 市域社会治理","B. 改善人民生活","C. 基层党组织","D. 政府机构"],"answer":"A","note":null},{"no":427,"type":"multi","question":"运用(  )统筹社会力量、平衡社会利益、调节社会关系、规范社会行为、化解社会矛盾。","options":["A. 法律制度","B. 法律思维","C. 法治思维","D. 法治方式"],"answer":"CD","note":null},{"no":428,"type":"single","question":"( )是关系中华民族永续发展的根本大计。","options":["A. 生态文明建设","B. 保护环境","C. 绿色低碳","D. 生物多样性"],"answer":"A","note":null},{"no":429,"type":"single","question":"( )是工业文明发展到一定阶段的产物，是人类社会进步的重大成果。","options":["A. 农业文明","B. 生态文明","C. 政治文明","D. 人类文明"],"answer":"B","note":null},{"no":430,"type":"single","question":"以下思不是中华文明的鲜明特色和独特标识的是( )","options":["A. 天地与我并生","B. 我思故我在","C. 而万物与我为一","D. 天人合一"],"answer":"B","note":null},{"no":431,"type":"single","question":"( )，这是重要的发展理念，也是推进现代化建设的重大原则。","options":["A. 生态文明建设","B. 山水林田湖草沙治理","C. 绿水青山就是金山银山","D. 人与自然和谐共生"],"answer":"C","note":null},{"no":432,"type":"single","question":"习近平指出:“( )是最公平的公共产品，是最普惠的民生福祉。”","options":["A. 生活环境","B. 社会福利","C. 土地","D. 良好的生态环境"],"answer":"D","note":null},{"no":433,"type":"multi","question":"大自然是人类赖以生存发展的基本条件，( )是全面建设社会主义现代化国家的内在要求。","options":["A. 尊重自然","B. 顺应自然","C. 保护自然","D. 融入自然"],"answer":"ABC","note":null},{"no":434,"type":"multi","question":"生态环境问题归根到底是( )问题。","options":["A. 经济发展方式","B. 生活方式","C. 社会发展方式","D. 教育方式"],"answer":"AB","note":null},{"no":435,"type":"multi","question":"绿水青山既是(AB )，又是( )。","options":["A. 自然财富","B. 生态财富","C. 社会财富","D. 经济财富"],"answer":"CD","note":null},{"no":436,"type":"single","question":"( )把“增强绿水青山就是金山银山的意识”等写入党章。","options":["A. 党的十八大","B. 党的十八届三中全会","C. 党的十九大","D. 党的二十大"],"answer":"C","note":null},{"no":437,"type":"single","question":"( )，是全面建设社会主义现代化国家的重要目标，也是满足人民日益增长的优美生态环境需要的必然要求。","options":["A. 建设美丽中国","B. 生态文明建设","C. 绿水青山就是金山银山","D. 建设美丽世界"],"answer":"A","note":null},{"no":438,"type":"single","question":"习近平指出:“绿色发展，就其要义来讲，是要解决好( )问题。”","options":["A. 生态环境保护","B. 人与自然和谐共生","C. 生物多样性","D. 美丽中国建设"],"answer":"B","note":null},{"no":439,"type":"single","question":"科学划定自然保护地保护范围及功能分区，构建以( )为主体、自然保护区为基础、各类自然公园为补充的自然保护地体系。","options":["A. 原始森林","B. 名山大川","C. 国家公园","D. 生态环境"],"answer":"C","note":null},{"no":440,"type":"single","question":"制度的生命力在于执行，关键在( )，靠的是严管。","options":["A. 监督","B. 保障","C. 真抓","D. 执行"],"answer":"C","note":null},{"no":441,"type":"multi","question":"坚持生态优先、绿色发展，把生态环境优势转化为( )等生态经济优势，绿水青山就变成了金山银山。","options":["A. 生态农业","B. 生态工业","C. 生态交通","D. 生态旅游"],"answer":"ABD","note":null},{"no":442,"type":"multi","question":"优化国土空间开发布局，严守( )三条红线，以国家重点生态功能区为支撑，实施全国重要生态系统保护和修复重大工程，筑牢国家生态安全屏障。","options":["A. 生态保护红线","B. 环境质量底线","C. 国土规划红线","D. 资源利用上线"],"answer":"ABD","note":null},{"no":443,"type":"multi","question":"生态环境问题，归根到底是( )造成的。","options":["A. 资源过度开发","B. 粗放利用","C. 奢侈消费","D. 生态腐败"],"answer":"ABC","note":null},{"no":444,"type":"multi","question":"强化国土空间规划和用途管控，划定落实( )三条控制线以及各类海域保护线。","options":["A. 生态保护红线","B. 永久基本农田","C. 环境科学治理","D. 城镇开发边界"],"answer":"ABD","note":null},{"no":445,"type":"single","question":"要站在对人类文明负责的高度，秉持共商共建共享的全球治理观，携手应对气候变化、海洋污染、生物保护等全球性环境问题，实现联合国( )可持续发展目标，扎实推动全球生态文明之路行稳致远。","options":["A. 2025年","B. 2030年","C. 2045年","D. 2050年"],"answer":"B","note":null},{"no":446,"type":"single","question":"应对生态环境挑战，必须摒弃“单边主义”“极端利己主义”“甩锅推责”，打造( )的全球生态治理体系。","options":["A. 命运与共","B. 携手合作","C. 多元共治","D. 美丽世界"],"answer":"C","note":null},{"no":447,"type":"single","question":"( )问题是全球生态环境治理领域的突出问题，是全人类共同面临的重大挑战。","options":["A. 人类生存","B. 粮食安全","C. 气候变化","D. 生态破坏"],"answer":"C","note":null},{"no":448,"type":"single","question":"中国提前完成2020年应对气候变化和设立自然保护区相关目标，……力争2030年前实现碳达峰，努力争取( )前实现碳中和。","options":["A. 2035年","B. 2045年","C. 2050年","D. 2060年"],"answer":"D","note":null},{"no":449,"type":"single","question":"中国成功承办联合国《生物多样性公约》第( )次缔约方大会，推动国际社会达成“昆明一蒙特利尔全球生物多样性框架”等一揽子具有里程碑意义的成果,为全球生物多样性治理确定了目标、明确了途径。","options":["A. 十五","B. 十七","C. 十八","D. 二十"],"answer":"A","note":null},{"no":450,"type":"multi","question":"统筹( ),加强河流和湿地生态流量管理。","options":["A. 水资源","B. 水环境","C. 水生态","D. 水安全"],"answer":"ABCD","note":null},{"no":451,"type":"multi","question":"健全( )的生态环境保护体系。","options":["A. 源头预防","B. 过程控制","C. 损害赔偿","D. 责任追究"],"answer":"ABCD","note":null},{"no":452,"type":"multi","question":"继续促进可持续发展，把一个清洁美丽的世界留给子孙后代，需要国际社会加强合作，秉持( )，共建地球生命共同体，共建清洁美丽世界，书写人与自然和谐共生的美好画卷。","options":["A. 生态文明理念","B. 以绿色转型为驱动","C. 以人民福祉为中心","D. 以国际法为基础"],"answer":"ABCD","note":null},{"no":453,"type":"single","question":"习近平指出:“实现中华民族伟大复兴的中国梦，保证人民安居乐业，( )是头等大事。”","options":["A. 国家安全","B. 保护环境","C. 经济发展","D. 社会和谐"],"answer":"A","note":null},{"no":454,"type":"single","question":"( ),习近平在中央国家安全委员会第一次会议上首次提出总体国家安全观，强调必须坚持总体国家安全观，走出一条中国特色国家安全道路。","options":["A. 2013年5月15日","B. 2014年4月15日","C. 2017年4月15日","D. 2018年5月15日"],"answer":"B","note":null},{"no":455,"type":"single","question":"总体国家安全观以( )为宗旨……","options":["A. 政治安全","B. 人民安全","C. 社会安全","D. 经济安全"],"answer":"B","note":null},{"no":456,"type":"single","question":"总体国家安全观的关键是( )。","options":["A. “国家”","B. “安全”","C. “总体”","D. 意识形态"],"answer":"C","note":null},{"no":457,"type":"single","question":"国家安全法律制度体系加快形成，以( )为引领，制定出台国家情报法、反恐怖主义法、境外非政府组织境内活动管理法、反间谍法、网络安全法、核安全法、数据安全法等一系列国家安全法律法规。","options":["A. 宪法","B. 反分裂国家法","C. 国际安全法","D. 国家安全法"],"answer":"D","note":null},{"no":458,"type":"single","question":"要坚定不移走中国特色国家安全道路，统筹发展和安全，把维护( )放在首要位置，守好重点领域国家安全的主阵地、主战场，加快构建统筹各领域安全的新安全格局。","options":["A. 人民安全","B. 政治安全","C. 经济安全","D. 国土安全"],"answer":"B","note":null},{"no":459,"type":"single","question":"( )强调“统筹发展和安全”，并将其写入党章。","options":["A. 党的十八届四中全会","B. 党的十九大","C. 党的十九届六中全会","D. 党的二十大"],"answer":"D","note":null},{"no":460,"type":"single","question":"( )是国家安全的根本。","options":["A. 人民安全","B. 政治安全","C. 经济安全","D. 军事安全"],"answer":"B","note":null},{"no":461,"type":"single","question":"维护政权安全，就是要毫不动摇坚持和巩固( )和长期执政地位。","options":["A. 人民当家作主","B. 社会和谐","C. 党的领导","D. 国家地位"],"answer":"C","note":null},{"no":462,"type":"single","question":"维护意识形态安全，就是要毫不动摇坚持和巩固( )在意识形态领域的指导地位……","options":["A. 中国特色社会主义","B. 习近平新时代中国特色社会主义思想","C. 马克思主义","D. 科学社会主义"],"answer":"C","note":null},{"no":463,"type":"multi","question":"进入新时代，我国面临更为严峻复杂的国家安全形势，从外部环境来看，主要是( )。","options":["A. 世界战略格局、全球治理体系、综合国力竞争进入深度变迁的历史进程","B. 气候变化、粮食安全、能源安全等全球性问题日趋尖锐复杂","C. 地区热点和局部冲突此起彼伏，国际局势变得更加复杂动荡","D. 和平与发展的时代主题面临严峻挑战"],"answer":"ABCD","note":null},{"no":464,"type":"multi","question":"进入新时代，我国面临更为严峻复杂的国家安全形势，从内部环境来看，主要是( )。","options":["A. 重点领域关键环节改革任务仍然艰巨，科技创新能力存在卡点瓶颈","B. 粮食、能源、资源、金融和产业链供应链安全面临重大考验","C. 意识形态领域存在不少挑战，重点领域风险敞口加大","D. 风险呈现形态更加复杂，既有显性风险又有隐性风险","E. 既有可以预料的风险又有难以预料的风险，既有“黑天鹅”事件又有“灰犀牛”事件，而且各类风险成因多样、彼此交织"],"answer":"ABCDE","note":null},{"no":465,"type":"multi","question":"当前我国所面临的新形势新挑战是( )。","options":["A. 正处于中华民族伟大复兴的关键时期","B. 处于从发展中大国迈向社会主义现代化强国的关键阶段","C. 中国式现代化越向前推进拓展","D. 一些敌视中国共产党领导和我国社会主义制度的势力处心积虑地破坏，我们面临的压力和阻力越大"],"answer":"ABCD","note":null},{"no":466,"type":"multi","question":"总体国家安全观强调( )。","options":["A. 做好国家安全工作的系统思维和方法，加强科学统筹","B. 维护国家安全要贯穿党和国家工作各方面全过程","C. 打总体战，形成汇聚党政军民学各战线各方面各层级的强大合力","D. 全社会全政府全体系全手段应对重大国家安全风险挑战"],"answer":"ABCD","note":null},{"no":467,"type":"multi","question":"总体国家安全观( )。","options":["A. 回答了如何解决好大国发展进程中面临的共性安全问题","B. 回答了如何解决好中华民族伟大复兴关键时期面临的特殊安全问题","C. 系统提出了一系列具有原创性、时代性的重要观点","D. 为破解我国国家安全面临的难题、推进新时代国家安全工作提供了基本遵循"],"answer":"ABCD","note":null},{"no":468,"type":"multi","question":"新时代国家安全得到全面加强,表现在( )。","options":["A. 党中央成立中央国家安全委员会","B. 制定实施《中国共产党领导国家安全工作条例》","C. 制定出台国家情报法、反恐怖主义法等一系列国家安全法律法规","D. 制定实施《国家安全战略纲要》《国家安全战略(2021-2025年)》","E. 国家安全体系和能力建设取得突破性进展"],"answer":"ABCDE","note":null},{"no":469,"type":"single","question":"习近平指出:“( )是老百姓解决温饱后的第一需求，是极重要的民生，也是最基本的发展环境。”","options":["A. 就业","B. 平安","C. 生态","D. 教育"],"answer":"B","note":null},{"no":470,"type":"single","question":"( )，是全面建设社会主义现代化国家的重要内容和重要保障。","options":["A. 构建和谐社会","B. 全面依法治国","C. 人与自然和谐共生","D. 建设平安中国"],"answer":"D","note":null},{"no":471,"type":"single","question":"( )，是检验更高水平的平安中国建设成效的重要标志。","options":["A. 人民生活水平提升","B. 社会治理能力现代化","C. 社会更加安全稳定有序","D. 共同富裕"],"answer":"C","note":null},{"no":472,"type":"single","question":"聚焦保障人民安宁，坚持以( )为导向，更快破大案、更多破小案、更准办好案、更好控发案，切实保护人民群众人身权、财产权、人格权。","options":["A. 社会稳定","B. 安居乐业","C. 群众期盼","D. 安全保障"],"answer":"C","note":null},{"no":473,"type":"single","question":"发展环境越是严峻复杂，越要坚定不移( )，健全各方面制度，完善治理体系，促进制度建设和治理效能更好转化融合。","options":["A. 深化改革","B. 防范化解重大风险","C. 构筑安全屏障","D. 提高社会治理能力"],"answer":"A","note":null},{"no":474,"type":"multi","question":"政治安全涉及国家( )的稳固，是一个国家最根本的需求。","options":["A. 主权","B. 政权","C. 制度","D. 意识形态"],"answer":"ABCD","note":null},{"no":475,"type":"multi","question":"维护政治安全，要( )。","options":["A. 维护政权安全","B. 维护制度安全","C. 维护意识形态安全","D. 维护中国共产党执政安全"],"answer":"ABCD","note":null},{"no":476,"type":"multi","question":"政治安全与人民安全、国家利益至上的关系是( )。","options":["A. 要把政治安全、人民安全、国家利益至上三者统一起来，确保实现党的长期执政、人民安居乐业、国家长治久安","B. 政治安全是维护人民安全和国家利益的根本保证","C. 人民安全居于中心地位，国家安全归根到底是保障人民利益","D. 国家利益至上是实现政治安全和人民安全的要求和原则。"],"answer":"ABCD","note":null},{"no":477,"type":"multi","question":"国土安全是立国之基，维护国土安全，要( )。","options":["A. 提升维护国土安全能力，加强边防、海防、空防建设","B. 坚决反对一切分裂祖国的活动","C. 深入打击恐怖主义、分裂主义、极端主义“三股势力”","D. 坚决防范“藏独”“东突”，坚决粉碎任何“台独”分裂图谋","E. 全力维护香港、澳门长期繁荣稳定"],"answer":"ABCDE","note":null},{"no":478,"type":"multi","question":"经济安全是国家安全的基础, 维护经济安全,要( )。","options":["A. 保证基本经济制度安全，维护社会主义市场经济秩序","B. 加快建设现代化经济体系，提升产业链供应链韧性和安全水平。","C. 加强金融、地方债务风险防控，守住不发生系统性风险的底线。","D. 保障经济社会发展所需的资源能源持续、可靠和有效供给。","E. 全方位夯实粮食安全根基，牢牢守住18亿亩耕地红线"],"answer":"ABCDE","note":null},{"no":479,"type":"multi","question":"健全国家安全体系，要( )。","options":["A. 坚持党中央对国家安全工作的集中统一领导，完善高效权威的国家安全领导体制","B. 强化国家安全工作协调机制","C. 完善国家安全法治体系、战略体系、政策体系、风险监测预警体系、国家应急管理体系","D. 完善重点领域安全保障体系和重要专项协调指挥体系","E. 加快涉外法治工作战略布局，健全反制裁、反干涉、反“长臂管辖”机制。"],"answer":"ABCDE","note":null},{"no":480,"type":"multi","question":"建设平安中国，必须( )。","options":["A. 聚焦影响国家安全和社会稳定的突出问题","B. 坚持安全第一、预防为主，建立大安全大应急框架","C. 推动公共安全治理模式由以事后处置为主向以事前预防为主转型","D. 推进安全生产风险专项整治，加强重点行业、重点领域安全监管。","E. 加强国家区域应急力量建设"],"answer":"ABCDE","note":null},{"no":481,"type":"multi","question":"提高防范化解重大风险能力,要( )。","options":["A. 坚持底线思维和极限思维,从最坏处着眼，做最充分的准备","B. 既要有防范风险的先手，也要有应对和化解风险挑战的高","C. 既要打好防范和抵御风险的有准备之战，也要打好化险为夷、转危为机的战略主动战","D. 既要高度警惕“黑天鹅”事件，也要防范“灰犀牛”事件","E. 在重大风险、强大对手面前，总想过太平日子、不想斗争是不切实际的"],"answer":"ABCDE","note":null},{"no":482,"type":"multi","question":"总体国家安全观以( )为保障，建立完善强基固本、化险为夷的各项对策措施，为维护国家安全提供硬实力和软实力保障。","options":["A. 军事安全","B. 科技安全","C. 文化安全","D. 社会安全"],"answer":"ABCD","note":null},{"no":483,"type":"single","question":"巩固( )是新时代坚持和发展中国特色社会主义、实现中华民族伟大复兴的战略支撑。","options":["A. 国家安全","B. 习近平强军思想","C. 国防和强大人民军队","D. 综合国力"],"answer":"C","note":null},{"no":484,"type":"single","question":"当今世界，( )仍然是时代主题，但并不太平。","options":["A. 战争与革命","B. 和平与发展","C. 合作与发展","D. 合作与共赢"],"answer":"B","note":null},{"no":485,"type":"single","question":"( )是执行党的政治任务的武装集团，党和人民所需就是军队使命任务所系。","options":["A. 警察部队","B. 人民军队","C. 预备役","D. 火箭军"],"answer":"B","note":null},{"no":486,"type":"single","question":"( )是灵魂，决定军队建设的政治方向。","options":["A. 听党指挥","B. 能打胜仗","C. 作风优良","D. 纪律严明"],"answer":"A","note":null},{"no":487,"type":"single","question":"坚持( )是人民军队永远不变的军魂。","options":["A. 全心全意为人民服务","B. 强军目标","C. 人民至上","D. 党对人民军队的绝对领导"],"answer":"D","note":null},{"no":488,"type":"single","question":"( )是核心，反映军队的根本职能和军队建设的根本指向。","options":["A. 听党指挥","B. 能打胜仗","C. 作风优良","D. 纪律严明"],"answer":"B","note":null},{"no":489,"type":"single","question":"( )是保证，关系军队的性质、宗旨、本色。","options":["A. 听党指挥","B. 能打胜仗","C. 作风优良","D. 纪律严明"],"answer":"C","note":null},{"no":490,"type":"single","question":"党的十九大提出，到( )把人民军队全面建成世界一流军队。","options":["A. 2025年","B. 2035年","C. 2045年","D. 本世纪中叶"],"answer":"D","note":null},{"no":491,"type":"single","question":"( )进一步充实了国防和军队现代化的目标任务和发展步骤，明确提出确保2027年实现建军一百年奋斗目标。","options":["A. 党的十八届三中全会","B. 党的十九大","C. 党的十九届五中全会","D. 党的二十大"],"answer":"C","note":null},{"no":492,"type":"single","question":"坚持( )，是马克思主义建党建军的一条基本原则。","options":["A. 人民至上","B. 全心全意为人民服务","C. 党对人民军队的绝对领导","D. 作风优良"],"answer":"C","note":null},{"no":493,"type":"multi","question":"( )是军队的根本价值所在。","options":["A. 听党指挥","B. 能打仗","C. 打胜仗","D. 纪律严明"],"answer":"BC","note":null},{"no":494,"type":"multi","question":"到2035年基本实现国防和军队现代化。这一步的关键是实现( )。","options":["A. 军事理论现代化","B. 军队组织形态现代化","C. 军事人员现代化","D. 武器装备现代化"],"answer":"ABCD","note":null},{"no":495,"type":"multi","question":"党对人民军队的绝对领导，是( )。","options":["A. 建军之本","B. 立党之基","C. 执政之源","D. 强军之魂"],"answer":"AD","note":null},{"no":496,"type":"multi","question":"新的征程上，开创国防和军队现代化新局面，必须全面推进( )、依法治军，加快把人民军队建设成为世界一流军队，以更强大的能力、更可靠的手段捍卫国家主权、安全、发展利益。","options":["A. 政治建军","B. 改革强军","C. 科技强军","D. 人才强军"],"answer":"ABCD","note":null},{"no":497,"type":"multi","question":"( )，是治军带兵的铁律，也是建设强大军队的基本规律。","options":["A. 政治建军","B. 改革强军","C. 厉行法治","D. 严肃军纪"],"answer":"CD","note":null},{"no":498,"type":"single","question":"( )是坚持党对人民军队绝对领导的根本制度和根本实现形式，在党领导军队的一整套制度体系中处于最高层次、居于统领地位。","options":["A. 党委(支部)统一的集体领导","B. 军委主席负责制","C. 政治委员制","D. 政治机关制"],"answer":"B","note":null},{"no":499,"type":"single","question":"( )是人民军队的立军之本。","options":["A. 政治建军","B. 改革强军","C. 科技强军","D. 依法治军"],"answer":"A","note":null},{"no":500,"type":"single","question":"( )是提高实战能力的重要途径和抓手，是最直接的军事斗争准备","options":["A. 听党指挥","B. 纪律严明","C. 军事训练","D. 科学练兵"],"answer":"C","note":null},{"no":501,"type":"single","question":"( )是实现富国和强军相统一的重要政治保障。","options":["A. 军民情深","B. 人民幸福","C. 军政军民团结","D. 民族团结"],"answer":"C","note":null},{"no":502,"type":"single","question":"坚持从严治军铁律，坚持抓住领导干部这个( )……","options":["A. “关键少数”","B. “总钥匙”","C. “总开关”","D. “牛鼻子”"],"answer":"A","note":null},{"no":503,"type":"multi","question":"在枪林弹雨的战场上，面对气焰嚣张的强大敌人，人民军队发出了“三个不相信”的英雄宣言:在革命战士面前( )!","options":["A. 不相信有完不成的任务","B. 不相信有克服不了的困难","C. 不相信有攻克不了的堡垒","D. 不相信有战胜不了的敌人"],"answer":"ABD","note":null},{"no":504,"type":"single","question":"（  ）是跳出历史周期率的第二个答案。","options":["A. 全面从严治党","B. 让人民来监督政府","C. 党的自我革命","D. 反腐败"],"answer":"C","note":null},{"no":505,"type":"single","question":"（  ），是中国共产党区别于其他政党的显著标志，也是我们党最大的优势、最鲜明的品格。","options":["A. 党的领导","B. 走中国特色社会主义道路","C. 人民民主专政","D. 勇于自我革命"],"answer":"D","note":null},{"no":506,"type":"multi","question":"勇于自我革命就要同一切影响党的先进性、弱化党的纯洁性的问题作坚决斗争，实现（  ）。","options":["A. 自我净化","B. 自我完善","C. 自我革新","D. 自我提高"],"answer":"ABCD","note":null},{"no":507,"type":"multi","question":"以习近平同志为核心的党中央统揽（  ），以刀刃向内的自我革命精神深入推进全面从严治党，推动中国特色社会主义事业展现出更为广阔的发展前景,党在革命性锻造中更加坚强有力。","options":["A. 伟大斗争","B. 伟大工程","C. 伟大事业","D. 伟大梦想"],"answer":"ABCD","note":null}];
+const TYPE_NAME = { single: "单选题", multi: "多选题", judge: "判断题" };
+const LS_PRACTICE = "sizheng_practice_v1";
+const LS_WRONG = "sizheng_wrong_v1";
+const LS_PREF = "sizheng_pref_v1";
+
+/* ---------- 工具 ---------- */
+const $ = (s, p) => (p || document).querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+function loadLS(k, dflt) { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? dflt : v; } catch (e) { return dflt; } }
+function saveLS(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+const practiceStore = loadLS(LS_PRACTICE, {});   // { no: { pick: [...], ok: true } }
+let wrongSet = new Set(loadLS(LS_WRONG, []));     // 错题集
+const pref = loadLS(LS_PREF, { autoNext: false, filter: "all" });
+function saveWrong() { saveLS(LS_WRONG, [...wrongSet]); }
+function savePractice() { saveLS(LS_PRACTICE, practiceStore); }
+
+/* ---------- 全局状态 ---------- */
+let mode = "home";        // home | practice | redo | test | result
+let list = [];
+let idx = 0;
+let filter = pref.filter || "all";
+let autoNext = !!pref.autoNext;
+let testSel = {};         // 测试模式选择 { idx: [key...] }
+let testResult = null;
+let testOrder = [];
+
+const filtered = () => QUESTIONS.filter(q => filter === "all" || q.type === filter);
+const byNo = n => QUESTIONS.find(q => q.no === n);
+const qKeys = q => q.answer.split("");
+const letterOf = o => o.charAt(0);
+
+function answerKey(q, pickArr) {
+  const sel = [...pickArr].sort().join("");
+  const ans = [...qKeys(q)].sort().join("");
+  return { sel, ans, ok: sel === ans };
+}
+function userPick(q) { return practiceStore[q.no] || null; }
+
+const app = $("#app");
+function render() {
+  app.innerHTML = "";
+  const oldPal = document.getElementById("palMask");
+  if (oldPal) oldPal.remove();
+  if (mode === "home") renderHome();
+  else if (mode === "test") renderTest();
+  else if (mode === "result") renderResult();
+  else renderPractice();
+}
+function goHome() { mode = "home"; render(); window.scrollTo(0, 0); }
+
+/* ---------- 首页 ---------- */
+function renderHome() {
+  const cnt = { single: 0, multi: 0, judge: 0 };
+  QUESTIONS.forEach(q => cnt[q.type]++);
+  const answered = Object.keys(practiceStore).length;
+  const wrongN = wrongSet.size;
+  const fc = { all: QUESTIONS.length, ...cnt };
+  const wrap = document.createElement("div");
+  wrap.innerHTML = `
+    <div class="topbar"><h1>思政选择题 · 在线做题</h1><div class="sub">共 ${QUESTIONS.length} 题 · 学习通题库</div></div>
+    <div class="hero">
+      <div class="big">共 <em>${QUESTIONS.length}</em> 道题，开始刷题吧！</div>
+      <div class="stat-row">
+        <div class="st"><b>${cnt.single}</b><span>单选题</span></div>
+        <div class="st"><b>${cnt.multi}</b><span>多选题</span></div>
+        <div class="st"><b>${cnt.judge}</b><span>判断题</span></div>
+        <div class="st"><b>${answered}</b><span>已做过</span></div>
+        <div class="st"><b>${wrongN}</b><span>待攻克错题</span></div>
+      </div>
+    </div>
+    <div class="filter-box">
+      <div class="label">题型范围（对练习和测试均生效）</div>
+      <div class="chips" id="chips">
+        <button class="chip ${filter === "all" ? "on" : ""}" data-f="all">全部 ${QUESTIONS.length} 题</button>
+        <button class="chip ${filter === "single" ? "on" : ""}" data-f="single">单选 ${cnt.single}</button>
+        <button class="chip ${filter === "multi" ? "on" : ""}" data-f="multi">多选 ${cnt.multi}</button>
+        <button class="chip ${filter === "judge" ? "on" : ""}" data-f="judge">判断 ${cnt.judge}</button>
+      </div>
+    </div>
+    <div class="mode-list">
+      <button class="mode-card" id="mPractice">
+        <span class="cnt">${fc[filter] || 0} 题</span>
+        <span class="ic">📝</span>
+        <div class="t">顺序练习</div>
+        <div class="d">边做边看对错，自动保存进度${answered ? "（可继续上次）" : ""}</div>
+      </button>
+      <button class="mode-card" id="mRedo" ${wrongN ? "" : "disabled"}>
+        <span class="cnt">${wrongN} 题</span>
+        <span class="ic">🔁</span>
+        <div class="t">错题重做</div>
+        <div class="d">${wrongN ? "只做错过的题，答对即移出错题本" : "暂无错题，先去做题吧"}</div>
+      </button>
+      <button class="mode-card full" id="mTest">
+        <span class="cnt">${fc[filter] || 0} 题</span>
+        <span class="ic">🎯</span>
+        <div class="t">模拟测试</div>
+        <div class="d">随机打乱顺序，答完统一交卷评分，错题自动加入错题本</div>
+      </button>
+    </div>
+    <div class="foot-tools">
+      <button id="btnReset">清空做题记录与错题本</button>
+    </div>`;
+  app.appendChild(wrap);
+  $("#chips").onclick = e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    filter = b.dataset.f; pref.filter = filter; saveLS(LS_PREF, pref); render();
+  };
+  $("#mPractice").onclick = () => { mode = "practice"; list = filtered(); idx = firstUnfinished(list); render(); };
+  $("#mRedo").onclick = () => {
+    if (!wrongSet.size) return;
+    mode = "redo"; list = QUESTIONS.filter(q => wrongSet.has(q.no)); idx = 0; render();
+  };
+  $("#mTest").onclick = () => {
+    mode = "test"; testOrder = shuffle(filtered().map(q => q.no));
+    testSel = {}; testResult = null; idx = 0; render();
+  };
+  $("#btnReset").onclick = () => {
+    if (!confirm("确定清空所有做题记录和错题本吗？")) return;
+    Object.keys(practiceStore).forEach(k => delete practiceStore[k]);
+    wrongSet.clear();
+    savePractice(); saveWrong(); render();
+  };
+}
+function firstUnfinished(l) {
+  for (let i = 0; i < l.length; i++) if (!practiceStore[l[i].no]) return i;
+  return 0;
+}
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ---------- 练习 / 错题重做 ---------- */
+function renderPractice() {
+  const q = list[idx];
+  const isRedo = mode === "redo";
+  const total = list.length;
+  const answeredN = list.filter(x => practiceStore[x.no]).length;
+  const correctN = list.filter(x => practiceStore[x.no] && practiceStore[x.no].ok).length;
+  const rate = answeredN ? Math.round(correctN / answeredN * 100) : 0;
+
+  const wrap = document.createElement("div");
+  wrap.innerHTML = `
+    <div class="topbar">
+      <h1>${isRedo ? "错题重做" : "顺序练习"}</h1>
+      <div class="sub">第 ${idx + 1} / ${total} 题 · 已答 ${answeredN} · 正确率 ${rate}%</div>
+      <button class="back" id="btnHome">返回</button>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-line"><i style="width:${(answeredN / total * 100).toFixed(1)}%"></i></div>
+      <div class="progress-text">
+        <span>题型：${TYPE_NAME[q.type]}${q.type === "multi" ? " · 可多选" : ""}</span>
+        <label><input type="checkbox" id="autoNext" ${autoNext ? "checked" : ""}> 答对自动下一题</label>
+      </div>
+    </div>
+    <div class="qcard" id="qcard"></div>`;
+  app.appendChild(wrap);
+  renderQuestion(q, userPick(q));
+  buildNavbar({
+    onNext: () => { if (idx < list.length - 1) { idx++; render(); } else goHome(); },
+    nextLabel: idx === list.length - 1 ? "完成" : "下一题"
+  });
+  $("#autoNext").onchange = e => { autoNext = e.target.checked; pref.autoNext = autoNext; saveLS(LS_PREF, pref); };
+  $("#btnHome").onclick = goHome;
+}
+
+function renderQuestion(q, rec) {
+  const card = $("#qcard");
+  const multi = q.type === "multi";
+  const judge = q.type === "judge";
+  const opts = judge ? ["对", "错"] : q.options;
+  const picked = rec ? [...rec.pick] : [];
+  const done = !!rec;
+  const ansKeys = qKeys(q);
+
+  card.innerHTML = `
+    <div class="qhead">
+      <span class="badge ${q.type}">${TYPE_NAME[q.type]}</span>
+      <span class="qno">第 ${q.no} 题</span>
+    </div>
+    <div class="qtext">${esc(q.question)}</div>
+    <div class="opts ${judge ? "two" : ""}" id="opts">
+      ${opts.map(o => {
+        const key = judge ? o : letterOf(o);
+        let cls = "opt" + (judge ? " tf" : "");
+        if (done) {
+          cls += " locked";
+          if (ansKeys.includes(key)) cls += " correct";
+          else if (picked.includes(key)) cls += " wrong";
+        } else if (picked.includes(key)) cls += " picked";
+        const keyTxt = judge ? (key === "对" ? "✓" : "✗") : key;
+        const body = judge ? key : o.replace(/^[A-E][\.、]\s*/, "");
+        return `<button type="button" class="${cls}" data-key="${esc(key)}" ${done ? "disabled" : ""}>
+          <span class="key">${esc(keyTxt)}</span><span>${esc(body)}</span></button>`;
+      }).join("")}
+    </div>
+    ${multi && !done
+      ? `<button type="button" class="multi-confirm" id="btnConfirm" disabled>确认答案</button>
+         <div class="multi-tip">多选题：先点选所有你认为正确的选项，再点确认</div>` : ""}
+    <div id="fbSlot"></div>`;
+
+  if (done) { showFeedback(q, rec); return; }
+
+  let sel = [];
+  card.onclick = e => {
+    const b = e.target.closest(".opt"); if (!b || b.disabled) return;
+    const key = b.dataset.key;
+    if (multi) {
+      const i = sel.indexOf(key);
+      if (i >= 0) sel.splice(i, 1); else sel.push(key);
+      b.classList.toggle("picked", sel.includes(key));
+      const c = $("#btnConfirm");
+      c.disabled = sel.length === 0;
+      c.textContent = sel.length ? `确认答案（已选 ${sel.length} 项）` : "确认答案";
+    } else {
+      submitPractice(q, [key]);
+    }
+  };
+  const btnC = $("#btnConfirm");
+  if (btnC) btnC.onclick = () => { if (sel.length) submitPractice(q, sel); };
+}
+function submitPractice(q, pick) {
+  const r = answerKey(q, pick);
+  const rec = { pick: [...pick], ok: r.ok };
+  practiceStore[q.no] = rec;
+  savePractice();
+  if (r.ok) wrongSet.delete(q.no); else wrongSet.add(q.no);
+  saveWrong();
+  renderQuestion(q, rec);
+  if (r.ok && autoNext && idx < list.length - 1) setTimeout(() => { idx++; render(); }, 650);
+}
+function showFeedback(q, rec) {
+  const slot = $("#fbSlot");
+  if (!slot) return;
+  const r = answerKey(q, rec.pick);
+  const ansTxt = q.type === "judge" ? q.answer : r.ans.split("").join("、");
+  slot.innerHTML = `
+    <div class="feedback ${r.ok ? "ok" : "no"}">
+      <b>${r.ok ? "✔ 回答正确" : "✘ 回答错误"}</b>
+      <div class="ans">正确答案：${esc(ansTxt)}</div>
+      ${q.note ? `<div class="note">⚠ ${esc(q.note)}</div>` : ""}
+    </div>`;
+}
+
+/* ---------- 底部导航 ---------- */
+function buildNavbar(cfg) {
+  const bar = document.createElement("div");
+  bar.className = "navbar";
+  bar.innerHTML = `<div class="inner">
+    <button class="btn-prev" id="navPrev">上一题</button>
+    <button class="btn-mid" id="navMid">答题卡</button>
+    <button class="btn-next" id="navNext">${esc(cfg.nextLabel || "下一题")}</button>
+  </div>`;
+  app.appendChild(bar);
+  $("#navPrev").onclick = () => { if (idx > 0) { idx--; render(); } };
+  $("#navMid").onclick = showPalette;
+  $("#navNext").onclick = cfg.onNext;
+}
+function showPalette() {
+  const isTest = mode === "test";
+  const state = i => {
+    if (isTest) return (testSel[i] || []).length ? "done" : "";
+    const rec = practiceStore[list[i].no];
+    return rec ? (rec.ok ? "ok" : "no") : "";
+  };
+  const legend = isTest
+    ? `<span><i style="background:#e3f2fd;border-color:#90caf9"></i>已作答</span><span><i style="background:#fff;border-color:#e0e0e0"></i>未作答</span><span><i style="outline:2px solid #d32f2f"></i>当前题</span>`
+    : `<span><i style="background:var(--green-bg);border-color:#a5d6a7"></i>答对</span><span><i style="background:var(--red-bg);border-color:#ef9a9a"></i>答错</span><span><i style="background:#fff;border-color:#e0e0e0"></i>未答</span><span><i style="outline:2px solid #d32f2f"></i>当前题</span>`;
+  const mask = document.createElement("div");
+  mask.className = "palette-mask"; mask.id = "palMask";
+  mask.innerHTML = `<div class="palette">
+    <h3>答题卡（共 ${list.length} 题）</h3>
+    <div class="lgd">${legend}</div>
+    <div class="pgrid">
+      ${list.map((qq, i) => `<button class="pcell ${state(i)} ${i === idx ? "cur" : ""}" data-i="${i}">${qq.no}</button>`).join("")}
+    </div>
+  </div>`;
+  mask.onclick = e => { if (e.target === mask) mask.remove(); };
+  mask.querySelector(".palette").onclick = e => {
+    e.stopPropagation();
+    const b = e.target.closest(".pcell"); if (!b) return;
+    idx = +b.dataset.i; mask.remove(); render();
+  };
+  document.body.appendChild(mask);
+  requestAnimationFrame(() => mask.classList.add("show"));
+}
+
+/* ---------- 模拟测试 ---------- */
+function renderTest() {
+  list = testOrder.map(byNo);
+  const q = list[idx];
+  const answeredN = Object.keys(testSel).length;
+  const wrap = document.createElement("div");
+  wrap.innerHTML = `
+    <div class="topbar">
+      <h1>模拟测试</h1>
+      <div class="sub">已答 ${answeredN} / ${list.length} · 随机顺序</div>
+      <button class="back" id="btnQuit">退出</button>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-line"><i style="width:${(answeredN / list.length * 100).toFixed(1)}%"></i></div>
+      <div class="progress-text"><span>题型：${TYPE_NAME[q.type]}${q.type === "multi" ? " · 可多选" : ""}</span><span>做完后点"交卷"查看成绩</span></div>
+    </div>
+    <div class="qcard" id="qcard"></div>
+    <button class="multi-confirm" id="btnSubmit" style="background:#2e7d32;box-shadow:0 4px 12px rgba(46,125,50,.3)">交卷并查看成绩</button>`;
+  app.appendChild(wrap);
+  renderTestQuestion(q);
+  buildNavbar({
+    nextLabel: idx === list.length - 1 ? "回第一题" : "下一题",
+    onNext: () => { idx = idx < list.length - 1 ? idx + 1 : 0; render(); }
+  });
+  $("#btnSubmit").onclick = submitTest;
+  $("#btnQuit").onclick = () => {
+    if (!confirm("退出将放弃本次测试作答，确定退出？")) return;
+    mode = "home"; render();
+  };
+}
+function renderTestQuestion(q) {
+  const card = $("#qcard");
+  const judge = q.type === "judge";
+  const multi = q.type === "multi";
+  const opts = judge ? ["对", "错"] : q.options;
+  const sel = testSel[idx] || [];
+  card.innerHTML = `
+    <div class="qhead">
+      <span class="badge ${q.type}">${TYPE_NAME[q.type]}</span>
+      <span class="qno">第 ${idx + 1} / ${list.length} 题</span>
+    </div>
+    <div class="qtext">${esc(q.question)}</div>
+    <div class="opts ${judge ? "two" : ""}" id="opts">
+      ${opts.map(o => {
+        const key = judge ? o : letterOf(o);
+        const keyTxt = judge ? (key === "对" ? "✓" : "✗") : key;
+        const body = judge ? key : o.replace(/^[A-E][\.、]\s*/, "");
+        return `<button type="button" class="opt ${judge ? "tf" : ""} ${sel.includes(key) ? "picked" : ""}" data-key="${esc(key)}">
+          <span class="key">${esc(keyTxt)}</span><span>${esc(body)}</span></button>`;
+      }).join("")}
+    </div>
+    ${multi ? `<div class="multi-tip">多选题：选出所有你认为正确的选项</div>` : ""}`;
+  card.onclick = e => {
+    const b = e.target.closest(".opt"); if (!b) return;
+    const key = b.dataset.key;
+    let cur = testSel[idx] || [];
+    if (multi) {
+      cur = cur.includes(key) ? cur.filter(x => x !== key) : [...cur, key];
+      testSel[idx] = cur;
+      renderTestQuestion(q);
+    } else {
+      testSel[idx] = [key];
+      renderTestQuestion(q);
+      setTimeout(() => { if (idx < list.length - 1) { idx++; render(); } else render(); }, 150);
+    }
+  };
+}
+function submitTest() {
+  const unanswered = list.length - Object.keys(testSel).length;
+  if (unanswered > 0 && !confirm(`还有 ${unanswered} 题未作答，确定交卷？`)) return;
+  let okN = 0;
+  const wrongList = [];
+  list.forEach((q, i) => {
+    const pick = testSel[i] || [];
+    const r = answerKey(q, pick);
+    if (r.ok) okN++; else wrongList.push({ q, pick, r });
+    practiceStore[q.no] = { pick: [...pick], ok: r.ok };
+    if (r.ok) wrongSet.delete(q.no); else wrongSet.add(q.no);
+  });
+  savePractice(); saveWrong();
+  const rate = list.length ? Math.round(okN / list.length * 100) : 0;
+  testResult = { okN, total: list.length, rate, wrongList };
+  mode = "result";
+  render();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- 成绩页 ---------- */
+function renderResult() {
+  const r = testResult;
+  const wrongN = r.total - r.okN;
+  const wrap = document.createElement("div");
+  wrap.innerHTML = `
+    <div class="topbar"><h1>测试成绩</h1><div class="sub">共 ${r.total} 题</div></div>
+    <div class="result-hero">
+      <div class="score-ring" style="--p:${r.rate};--rc:${r.rate >= 60 ? "#2e7d32" : "#e53935"}">
+        <span class="v">${r.rate}</span><span class="u">得分率 %</span>
+      </div>
+      <div class="result-stats">
+        <div class="st gb"><b>${r.okN}</b><span>答对</span></div>
+        <div class="st rb"><b>${wrongN}</b><span>答错</span></div>
+        <div class="st"><b>${r.total}</b><span>总题数</span></div>
+      </div>
+    </div>
+    <div class="review-list">
+      ${r.wrongList.length === 0
+        ? `<div class="empty"><div class="eic">🎉</div>全部答对，太棒了！</div>`
+        : `<div class="empty" style="padding:14px;font-weight:700;color:var(--text)">以下 ${r.wrongList.length} 道错题已加入错题本</div>` +
+          r.wrongList.map(w => `
+          <div class="rv-item">
+            <div class="rvq">${esc(w.q.question)}</div>
+            ${w.q.options.length ? `<div class="rv-opt">${esc(w.q.options.join("\n"))}</div>` : ""}
+            <div class="rvl">你的答案：<span class="no">${esc(w.pick.length ? w.pick.join("、") : "未作答")}</span></div>
+            <div class="rvl">正确答案：<span class="ok">${esc(w.q.type === "judge" ? w.q.answer : w.r.ans)}</span></div>
+            ${w.q.note ? `<div class="rvl" style="color:#b26a00">⚠ ${esc(w.q.note)}</div>` : ""}
+          </div>`).join("")}
+    </div>`;
+  app.appendChild(wrap);
+  const bar = document.createElement("div");
+  bar.className = "navbar";
+  bar.innerHTML = `<div class="inner">
+    <button class="btn-prev" id="btnBackHome" style="flex:1">返回首页</button>
+    <button class="btn-next" id="btnRedo" style="flex:1">重做错题（${wrongSet.size}）</button>
+  </div>`;
+  app.appendChild(bar);
+  $("#btnBackHome").onclick = goHome;
+  $("#btnRedo").onclick = () => {
+    if (!wrongSet.size) { goHome(); return; }
+    mode = "redo"; list = QUESTIONS.filter(q => wrongSet.has(q.no)); idx = 0; render();
+  };
+}
+
+/* ---------- 键盘快捷键 ---------- */
+document.addEventListener("keydown", e => {
+  if (mode !== "practice" && mode !== "redo" && mode !== "test") return;
+  if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+  const q = list[idx]; if (!q) return;
+  if (e.key === "ArrowLeft") { if (idx > 0) { idx--; render(); } return; }
+  if (e.key === "ArrowRight") { if (idx < list.length - 1) { idx++; render(); } return; }
+  const k = e.key.toUpperCase();
+  let key = null;
+  if (q.type === "judge") {
+    if (["1", "A", "T", "Y"].includes(k)) key = "对";
+    else if (["2", "B", "F", "N"].includes(k)) key = "错";
+  } else if (/^[A-E]$/.test(k)) key = k;
+  if (key) {
+    const b = document.querySelector(`#opts .opt[data-key="${key}"]`);
+    if (b && !b.disabled) b.click();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
