@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>现代企业管理 · 在线题库</title>
+<style>
+:root{
+  --bg:#eef2ff;
+  --bg2:#f8fafc;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --primary:#4f46e5;
+  --primary-2:#7c3aed;
+  --primary-soft:#eef2ff;
+  --success:#16a34a;
+  --success-soft:#dcfce7;
+  --danger:#dc2626;
+  --danger-soft:#fee2e2;
+  --warning:#d97706;
+  --shadow:0 10px 30px rgba(15,23,42,.08);
+  --radius:18px;
+}
+html[data-theme="dark"]{
+  --bg:#0b1220;
+  --bg2:#0f172a;
+  --card:#111c33;
+  --text:#e2e8f0;
+  --muted:#94a3b8;
+  --border:#24324a;
+  --primary:#818cf8;
+  --primary-2:#a78bfa;
+  --primary-soft:#1e293b;
+  --success:#4ade80;
+  --success-soft:#052e16;
+  --danger:#f87171;
+  --danger-soft:#450a0a;
+  --warning:#fbbf24;
+  --shadow:0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, var(--primary-soft), transparent 60%),
+    radial-gradient(1000px 500px at 100% 0%, rgba(124,58,237,.12), transparent 60%),
+    var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit}
+.app{max-width:1100px;margin:0 auto;padding:24px 18px 60px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px;box-shadow:0 8px 20px rgba(79,70,229,.35)}
+.brand h1{font-size:18px;margin:0;letter-spacing:.02em}
+.brand p{margin:0;font-size:12px;color:var(--muted)}
+.top-actions{display:flex;align-items:center;gap:10px}
+.timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--primary);background:var(--primary-soft);padding:6px 12px;border-radius:999px;font-size:13px}
+.icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;display:grid;place-items:center;transition:.2s;padding:0}
+.icon-btn:hover{border-color:var(--primary);color:var(--primary)}
+.icon-btn svg{width:18px;height:18px}
+html[data-theme="light"] .icon-moon{display:none}
+html[data-theme="dark"] .icon-sun{display:none}
+.screen{display:none;animation:fade .25s ease}
+.screen.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.hero{text-align:center;padding:16px 0 22px}
+.hero h2{font-size:clamp(24px,4vw,34px);margin:0 0 8px;letter-spacing:-.02em}
+.hero p{margin:0;color:var(--muted);font-size:14px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);margin-bottom:18px}
+.card h3{margin:0 0 14px;font-size:16px}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.card-head h3{margin:0}
+.link-actions{display:flex;gap:6px}
+.text-btn{border:none;background:none;color:var(--primary);font-size:13px;cursor:pointer;padding:4px 8px;border-radius:8px}
+.text-btn:hover{background:var(--primary-soft)}
+.chapter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.chapter-item{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;cursor:pointer;transition:.18s;background:var(--bg2)}
+.chapter-item:hover{border-color:var(--primary)}
+.chapter-item.checked{border-color:var(--primary);background:var(--primary-soft)}
+.chapter-item input{accent-color:var(--primary);width:16px;height:16px;cursor:pointer}
+.chapter-name{font-weight:600;font-size:14px}
+.chapter-count{font-size:12px;color:var(--muted);margin-left:auto}
+.setting-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 0;border-bottom:1px dashed var(--border)}
+.setting-row:last-child{border-bottom:none}
+.setting-title{font-weight:600;font-size:14px}
+.setting-desc{font-size:12px;color:var(--muted)}
+.segmented{display:flex;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:4px;gap:4px;flex-shrink:0}
+.segmented button{border:none;background:transparent;color:var(--muted);padding:7px 14px;border-radius:9px;font-size:13px;cursor:pointer;font-weight:600;transition:.18s}
+.segmented button.active{background:var(--card);color:var(--primary);box-shadow:0 2px 8px rgba(15,23,42,.08)}
+.switch{position:relative;width:46px;height:26px;flex-shrink:0;cursor:pointer}
+.switch input{opacity:0;width:0;height:0}
+.switch span{position:absolute;inset:0;background:var(--border);border-radius:999px;transition:.2s}
+.switch span::after{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.switch input:checked + span{background:var(--primary)}
+.switch input:checked + span::after{transform:translateX(20px)}
+.primary-btn,.secondary-btn{border:none;border-radius:12px;padding:11px 20px;font-size:14px;font-weight:700;cursor:pointer;transition:.2s;white-space:nowrap}
+.primary-btn{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;box-shadow:0 8px 18px rgba(79,70,229,.28)}
+.primary-btn:hover{transform:translateY(-1px);box-shadow:0 12px 24px rgba(79,70,229,.34)}
+.primary-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.secondary-btn{background:var(--card);color:var(--text);border:1px solid var(--border)}
+.secondary-btn:hover{border-color:var(--primary);color:var(--primary)}
+.secondary-btn:disabled{opacity:.45;cursor:not-allowed}
+.big{width:100%;padding:15px 20px;font-size:16px;margin-top:6px}
+.small{padding:9px 16px;font-size:13px}
+.hint{text-align:center;color:var(--muted);font-size:13px;margin:10px 0 0}
+.hidden{display:none !important}
+.quiz-top{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.quiz-info{flex:1;min-width:0}
+.quiz-progress-text{font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:600}
+.progress{height:8px;background:var(--border);border-radius:999px;overflow:hidden}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--primary-2));border-radius:999px;transition:width .25s ease}
+.quiz-layout{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:18px;align-items:start}
+.question-card{margin-bottom:0}
+.q-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;background:var(--bg2);border:1px solid var(--border);font-size:12px;color:var(--muted);font-weight:600}
+.badge.type{color:var(--primary);background:var(--primary-soft);border-color:transparent}
+.badge.score{color:var(--warning);background:rgba(217,119,6,.12);border-color:transparent}
+.q-text{font-size:clamp(16px,2.2vw,19px);font-weight:600;line-height:1.75;margin-bottom:20px;white-space:pre-wrap}
+.option-list{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.option{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;padding:14px 16px;border:1.5px solid var(--border);border-radius:14px;background:var(--card);color:var(--text);cursor:pointer;transition:.16s;font-size:14.5px;line-height:1.6}
+.option:hover{border-color:var(--primary);background:var(--primary-soft)}
+.option-label{flex-shrink:0;width:26px;height:26px;border-radius:8px;background:var(--bg2);border:1px solid var(--border);display:grid;place-items:center;font-weight:700;font-size:13px;color:var(--muted);transition:.16s}
+.option.selected{border-color:var(--primary);background:var(--primary-soft)}
+.option.selected .option-label{background:var(--primary);border-color:var(--primary);color:#fff}
+.option.correct{border-color:var(--success);background:var(--success-soft)}
+.option.correct .option-label{background:var(--success);border-color:var(--success);color:#fff}
+.option.wrong{border-color:var(--danger);background:var(--danger-soft)}
+.option.wrong .option-label{background:var(--danger);border-color:var(--danger);color:#fff}
+.option.locked{cursor:default}
+.option.locked:hover{border-color:var(--border);background:var(--card)}
+.option.correct.locked:hover{border-color:var(--success);background:var(--success-soft)}
+.option.wrong.locked:hover{border-color:var(--danger);background:var(--danger-soft)}
+.option-mark{margin-left:auto;font-size:12px;font-weight:700;flex-shrink:0;padding-left:8px}
+.option.correct .option-mark{color:var(--success)}
+.option.wrong .option-mark{color:var(--danger)}
+.feedback{padding:12px 16px;border-radius:12px;font-size:14px;font-weight:600;margin-bottom:16px;line-height:1.6}
+.feedback.ok{background:var(--success-soft);color:var(--success)}
+.feedback.bad{background:var(--danger-soft);color:var(--danger)}
+.q-actions{display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap}
+.q-actions .primary-btn{flex:1;min-width:120px}
+.q-actions .secondary-btn{min-width:100px}
+.palette-card{position:sticky;top:18px}
+.palette-card summary{cursor:pointer;font-weight:700;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.palette-card summary::-webkit-details-marker{display:none}
+.palette-card summary::after{content:"▾";color:var(--muted);transition:.2s}
+.palette-card[open] summary::after{transform:rotate(180deg)}
+.palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(38px,1fr));gap:8px;margin-top:16px;max-height:420px;overflow:auto;padding-right:4px}
+.palette-btn{height:38px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-weight:700;font-size:13px;cursor:pointer;transition:.15s}
+.palette-btn:hover{border-color:var(--primary);color:var(--primary)}
+.palette-btn.answered{background:var(--primary-soft);color:var(--primary);border-color:var(--primary)}
+.palette-btn.current{outline:2px solid var(--primary);outline-offset:1px}
+.palette-btn.correct{background:var(--success-soft);color:var(--success);border-color:var(--success)}
+.palette-btn.wrong{background:var(--danger-soft);color:var(--danger);border-color:var(--danger)}
+.palette-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;font-size:11px;color:var(--muted)}
+.palette-legend span{display:inline-flex;align-items:center;gap:5px}
+.dot{width:10px;height:10px;border-radius:3px;display:inline-block;border:1px solid var(--border)}
+.dot.answered{background:var(--primary-soft);border-color:var(--primary)}
+.dot.correct{background:var(--success-soft);border-color:var(--success)}
+.dot.wrong{background:var(--danger-soft);border-color:var(--danger)}
+.result-hero{display:flex;align-items:center;gap:32px;flex-wrap:wrap}
+.score-ring{--pct:0;width:150px;height:150px;border-radius:50%;background:conic-gradient(var(--primary) calc(var(--pct)*1%), var(--border) 0);display:grid;place-items:center;flex-shrink:0;transition:.4s}
+.score-inner{width:118px;height:118px;border-radius:50%;background:var(--card);display:flex;align-items:baseline;justify-content:center;gap:3px}
+.score-inner strong{font-size:38px;line-height:1}
+.score-inner span{font-size:13px;color:var(--muted);font-weight:600}
+.result-summary{flex:1;min-width:240px}
+.result-summary h2{margin:0 0 6px;font-size:clamp(20px,3vw,26px)}
+.result-summary p{margin:0 0 18px;color:var(--muted);font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stats>div{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:10px;text-align:center}
+.stats strong{display:block;font-size:20px;line-height:1.2}
+.stats span{font-size:11px;color:var(--muted)}
+.result-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.result-actions button{flex:1;min-width:130px}
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.filter-bar button{border:1px solid var(--border);background:var(--card);color:var(--muted);padding:7px 16px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer}
+.filter-bar button.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.review-list{display:flex;flex-direction:column;gap:12px}
+.review-item{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--border);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+.review-item.correct{border-left-color:var(--success)}
+.review-item.wrong{border-left-color:var(--danger)}
+.review-item.unanswered{border-left-color:var(--warning)}
+.review-head{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.status-badge{margin-left:auto;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px}
+.status-badge.correct{background:var(--success-soft);color:var(--success)}
+.status-badge.wrong{background:var(--danger-soft);color:var(--danger)}
+.status-badge.unanswered{background:rgba(217,119,6,.14);color:var(--warning)}
+.review-q{font-weight:600;margin-bottom:12px;line-height:1.7;white-space:pre-wrap}
+.review-options{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+.review-option{display:flex;gap:10px;padding:9px 12px;border-radius:10px;background:var(--bg2);font-size:13.5px;line-height:1.55}
+.review-option .opt-label{font-weight:700;color:var(--muted);flex-shrink:0}
+.review-option.correct{background:var(--success-soft);color:var(--success)}
+.review-option.correct .opt-label{color:var(--success)}
+.review-option.wrong{background:var(--danger-soft);color:var(--danger)}
+.review-option.wrong .opt-label{color:var(--danger)}
+.review-answer{font-size:13px;color:var(--muted);display:flex;gap:16px;flex-wrap:wrap;line-height:1.6}
+.review-answer strong{color:var(--text)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+.footer{text-align:center;color:var(--muted);font-size:12px;margin-top:30px}
+.toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,20px);background:var(--text);color:var(--card);padding:10px 20px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:.25s;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (max-width:820px){
+  .quiz-layout{grid-template-columns:1fr}
+  .palette-card{position:static}
+  .palette{max-height:220px}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .result-hero{gap:20px}
+  .score-ring{width:120px;height:120px}
+  .score-inner{width:94px;height:94px}
+  .score-inner strong{font-size:30px}
+}
+@media (max-width:520px){
+  .app{padding:16px 12px 40px}
+  .brand p{display:none}
+  .card{padding:16px;border-radius:15px}
+  .setting-row{flex-direction:column;align-items:flex-start;gap:10px}
+  .segmented{width:100%}
+  .segmented button{flex:1}
+  .q-actions{flex-direction:column-reverse}
+  .q-actions .primary-btn,.q-actions .secondary-btn{width:100%}
+  .result-actions{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">企</div>
+      <div>
+        <h1>现代企业管理</h1>
+        <p>在线题库 · 自动判分</p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <span id="timer" class="timer hidden">00:00</span>
+      <button id="themeBtn" class="icon-btn" title="切换主题" aria-label="切换主题">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section id="setupScreen" class="screen active">
+      <div class="hero">
+        <h2>开始你的练习</h2>
+        <p>题库共 <strong id="bankTotal">0</strong> 道题 · 当前选择 <strong id="totalCount">0</strong> 道 / <span id="chapterCount">0</span> 章 · 每题 2 分</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>选择章节</h3>
+          <div class="link-actions">
+            <button id="selectAll" class="text-btn">全选</button>
+            <button id="selectNone" class="text-btn">清空</button>
+          </div>
+        </div>
+        <div id="chapterList" class="chapter-grid"></div>
+      </div>
+
+      <div class="card">
+        <h3>练习设置</h3>
+        <div class="setting-row">
+          <div>
+            <div class="setting-title">模式</div>
+            <div class="setting-desc">考试模式交卷后统一查看答案；练习模式答完立即判分</div>
+          </div>
+          <div class="segmented" id="modeSwitch">
+            <button type="button" data-mode="exam" class="active">考试模式</button>
+            <button type="button" data-mode="practice">练习模式</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-title">打乱题目顺序</div>
+            <div class="setting-desc">每次开始随机排列题目</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="shuffleQuestions"><span></span></label>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-title">打乱选项顺序</div>
+            <div class="setting-desc">选项顺序随机，答案自动对应</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="shuffleOptions"><span></span></label>
+        </div>
+      </div>
+
+      <button id="startBtn" class="primary-btn big">开始做题</button>
+      <button id="resumeBtn" class="secondary-btn big hidden">继续上次进度</button>
+      <p id="savedHint" class="hint hidden"></p>
+    </section>
+
+    <section id="quizScreen" class="screen">
+      <div class="quiz-top">
+        <button id="backBtn" class="icon-btn" title="返回首页" aria-label="返回首页">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"></path></svg>
+        </button>
+        <div class="quiz-info">
+          <div class="quiz-progress-text">第 <span id="currentNo">1</span> / <span id="activeTotal">0</span> 题</div>
+          <div class="progress"><div id="progressBar"></div></div>
+        </div>
+        <button id="submitBtn" class="primary-btn small">交卷</button>
+      </div>
+
+      <div class="quiz-layout">
+        <div class="question-card card">
+          <div class="q-meta">
+            <span id="qChapter" class="badge"></span>
+            <span id="qType" class="badge type"></span>
+            <span id="qScore" class="badge score"></span>
+          </div>
+          <div id="qText" class="q-text"></div>
+          <div id="optionList" class="option-list"></div>
+          <div id="feedback" class="feedback hidden"></div>
+          <div class="q-actions">
+            <button id="prevBtn" class="secondary-btn">上一题</button>
+            <button id="checkBtn" class="primary-btn hidden">确认本题</button>
+            <button id="nextBtn" class="primary-btn">下一题</button>
+          </div>
+        </div>
+
+        <details class="palette-card card" id="paletteDetails" open>
+          <summary>答题卡 <span id="answeredCount" class="muted"></span></summary>
+          <div id="palette" class="palette"></div>
+          <div class="palette-legend">
+            <span><i class="dot answered"></i>已答</span>
+            <span><i class="dot correct"></i>答对</span>
+            <span><i class="dot wrong"></i>答错</span>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="resultScreen" class="screen">
+      <div class="result-hero card">
+        <div class="score-ring" id="scoreRing">
+          <div class="score-inner"><strong id="scoreValue">0</strong><span>分</span></div>
+        </div>
+        <div class="result-summary">
+          <h2 id="resultTitle">练习完成</h2>
+          <p id="resultSub"></p>
+          <div class="stats">
+            <div><strong id="statCorrect">0</strong><span>答对</span></div>
+            <div><strong id="statWrong">0</strong><span>答错</span></div>
+            <div><strong id="statUnanswered">0</strong><span>未答</span></div>
+            <div><strong id="statRate">0%</strong><span>正确率</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button id="retryBtn" class="primary-btn">再做一次</button>
+        <button id="wrongBtn" class="secondary-btn">只练错题</button>
+        <button id="homeBtn" class="secondary-btn">返回首页</button>
+      </div>
+
+      <div class="filter-bar" id="filterBar">
+        <button type="button" data-filter="all" class="active">全部</button>
+        <button type="button" data-filter="wrong">错题</button>
+        <button type="button" data-filter="unanswered">未答</button>
+      </div>
+
+      <div id="reviewList" class="review-list"></div>
+    </section>
+  </main>
+
+  <footer class="footer">答题记录保存在本机浏览器中 · 多选题需全部选对才得分</footer>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const BANK = [{"chapter":"第一章测试","number":1,"type":"single","score":2,"question":"管理的二重性是指:（　）","options":{"A":"管理的自然属性和社会属性。","B":"管理的普遍性和特殊性","C":"管理的艺术性和实践性"},"answer":"A"},{"chapter":"第一章测试","number":2,"type":"single","score":2,"question":"“科学管理理论”的创始人是:（　）","options":{"A":"泰勒","B":"巴贝奇","C":"甘特","D":"福特"},"answer":"A"},{"chapter":"第一章测试","number":3,"type":"single","score":2,"question":"1990年，美国麻省理工学院斯隆管理学院的著名教授（　）发表了《第五项修炼一学习型组织的艺术与实践》，引起了世界管理理论界的关注与轰动。","options":{"A":"莱茵茨·韦里克","B":"马克斯·韦伯","C":"彼得·圣吉","D":"弗里克·吉尔布雷恩"},"answer":"C"},{"chapter":"第一章测试","number":4,"type":"single","score":2,"question":"根据马斯洛的需要层次理论，下列需要哪项是按照从低到高的顺序排列的:（　）(1)就业保障 (2)上司对自己工作的赞扬  (3)工作的挑战性(4)同乡联谊会 (5)满足标准热量摄入量的食品。","options":{"A":"(5)(1)(4)(2)(3)","B":"(5)(4)(1)(3)(2)","C":"(5)(4)(1)(2)(3)","D":"(5)(1)(3)(4)(2)"},"answer":"A"},{"chapter":"第一章测试","number":5,"type":"single","score":2,"question":"管理工作的目标是:（　）","options":{"A":"只注重效率","B":"只注重效果","C":"效率与效果不可兼得","D":"效率和效果的统一"},"answer":"D"},{"chapter":"第一章测试","number":6,"type":"multi","score":2,"question":"企业责任的内容包括:（　）","options":{"A":"企业对员工的责任","B":"企业对社区的责任","C":"企业对生态环境的责任","D":"企业对国家的责任","E":"企业对消费者和社会的责任"},"answer":"ABCDE"},{"chapter":"第一章测试","number":7,"type":"single","score":2,"question":"管理人员与一般工作人员的区别在于:（　）","options":{"A":"需要与他人配合完成组织目标","B":"需要从事具体的文件签发审阅工作","C":"需要对自己的工作成果负责","D":"需要协调他人的努力以实现组织目标"},"answer":"D"},{"chapter":"第一章测试","number":8,"type":"multi","score":2,"question":"按照企业内部生产力各要素所占比重分类，可将企业分为:（　）","options":{"A":"劳动密集型企业","B":"资本密集型企业","C":"技术密集型企业","D":"信息密集型","E":"知识密集型"},"answer":"ABCD"},{"chapter":"第一章测试","number":9,"type":"judge","score":2,"question":"劳动分工有助于提高工作效率，因而在组织结构设计中分工越细越好","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第一章测试","number":10,"type":"judge","score":2,"question":"管理是人类共同劳动的产物，只要存在众多人的协同劳动，就需要有管理。管理活动具有普遍性。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第一章测试","number":11,"type":"judge","score":2,"question":"在马克思所述的管理二重性论述中，指挥劳动体现了管理的社会属性，监督劳动体现了管理的自然属性。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第一章测试","number":12,"type":"judge","score":2,"question":"企业是一个经济组织，要有一定的组织机构，有自己的名称、办公和经营场所、组织章程等要素。企业应自主经营，独立核算，自负盈亏，具有法人资格。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第一章测试","number":13,"type":"judge","score":2,"question":"企业员工的士气越高，企业的经济效益也必定越好。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第二章测试","number":1,"type":"single","score":2,"question":"从管理学的发展历程可以看出，对于管理中人的理解的发展过程是:（　）","options":{"A":"从自然人到社会人","B":"从社会人到理性经济人","C":"从理性经济人到社会人","D":"从理性经济人到自然人"},"answer":"C"},{"chapter":"第二章测试","number":2,"type":"single","score":2,"question":"在下面对马斯洛的需要层次理论的描述中，不正确的是哪一项:（　）","options":{"A":"人的需要可以分成五个层次","B":"人的需求是由低到高逐级向上发展的","C":"人在某个低层次的需要得到完全满足时，才会关注更高一级的需要","D":"人在某个阶段，通常有一个主导需要，可以针对这个主导需求对他进行激励"},"answer":"C"},{"chapter":"第二章测试","number":3,"type":"single","score":2,"question":"赫伯特·西蒙所创立的管理学派被称为:（　）","options":{"A":"决策理论学派","B":"社会系统学派","C":"管理过程学派","D":"经验学派"},"answer":"A"},{"chapter":"第二章测试","number":4,"type":"multi","score":2,"question":"霍桑实验的主要内容为:（　）","options":{"A":"工场照明试验","B":"继电器装配试验","C":"大规模的访问和普查","D":"电话线圈装配工试验"},"answer":"ABCD"},{"chapter":"第二章测试","number":5,"type":"multi","score":2,"question":"西方古典管理理论是指:（　）","options":{"A":"泰勒的科学管理理论","B":"梅奥的人际关系理论","C":"法约尔的一般管理理论","D":"韦伯的行政组织理论"},"answer":"ACD"},{"chapter":"第二章测试","number":6,"type":"judge","score":2,"question":"泰勒在科学管理理论中强调要根据工人的职位高低实行有差别的工资制度。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第二章测试","number":7,"type":"judge","score":2,"question":"梅奥认为，在共同的工作过程中，人们相互之间必然发生联系，产生共同的感情，自然形成一种行为准则或惯例，要求个人服从。这就构成了“人的组织”。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第二章测试","number":8,"type":"judge","score":2,"question":"在《社会组织与经济组织理论》一书中，他最早提出一套比较完整的行政组织体系理论，因此被称之为“组织理论之父”。他就是法国古典管理理论的代表——韦伯。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第二章测试","number":9,"type":"judge","score":2,"question":"泰勒在制定科学的工作定额方面作了大量的研究，首先从时间研究和动作研究入手。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第二章测试","number":10,"type":"judge","score":2,"question":"法约尔认为，要经营好一个企业，不仅要改善生产现场的管理，而且应当注意改善企业经营的六类活动:技术活动、商业活动、财务活动、安全活动、会计活动、管理活动。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第三章测试","number":1,"type":"judge","score":2,"question":"在管理幅度给定的条件下，组织的规模越大则管理层次越多；在组织规模给定的条件下，管理幅度越窄则管理层次越多。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第三章测试","number":2,"type":"judge","score":2,"question":"直线职能式的组织结构的优点之一是它可以有效培养后备的最高管理人才。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第三章测试","number":3,"type":"judge","score":2,"question":"管理控制一般可分为事前控制、事中控制与事后控制三种。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第三章测试","number":4,"type":"judge","score":2,"question":"管理决策又称执行性决策，是日常工作中为提高生产效率、工作效率而作出的决策，牵涉范围较窄，只对组织产生局部影响。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第三章测试","number":5,"type":"judge","score":2,"question":"领导者的责任不能随着权力的下放而相应地全部转移给下级。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第三章测试","number":6,"type":"single","score":2,"question":"管理人员与一般工作人员的根本区别在于：（　）","options":{"A":"需要与他人配合完成组织目标","B":"需要从事具体的文件签发审阅工作","C":"需要对自己的工作成果负责","D":"需要协调他人的努力以实现组织目标"},"answer":"D"},{"chapter":"第三章测试","number":7,"type":"multi","score":2,"question":"按照所涉及的时间长短，计划可分为:（　）","options":{"A":"长期计划","B":"生产计划","C":"中期计划","D":"短期计划"},"answer":"ACD"},{"chapter":"第三章测试","number":8,"type":"single","score":2,"question":"组织设计最为重要的基础工作是：（　）","options":{"A":"部门划分与结构形成","B":"职务设计与人员调配","C":"管理人员的素质和能力","D":"职务设计与分析"},"answer":"D"},{"chapter":"第三章测试","number":9,"type":"multi","score":2,"question":"矩阵制组织的主要缺点是：（　）","options":{"A":"增加了管理层次","B":"存在双重领导","C":"实行了分权化管理","D":"组织稳定性差"},"answer":"BD"},{"chapter":"第三章测试","number":10,"type":"single","score":2,"question":"决策应遵循的原则是：（　）","options":{"A":"最优原则","B":"满意原则","C":"完全理性原则","D":"渐进理性原则"},"answer":"B"},{"chapter":"第四章测试","number":1,"type":"single","score":2,"question":"现代企业制度是以企业（　）为核心的制度体系。","options":{"A":"法人制度","B":"产权制度","C":"清晰的权责制度","D":"科学的管理制度"},"answer":"B"},{"chapter":"第四章测试","number":2,"type":"single","score":2,"question":"产权明晰是指要以法律的形式明确企业的（　）与企业的基本财产关系。","options":{"A":"出资者","B":"经营者","C":"债权人","D":"法人代表"},"answer":"A"},{"chapter":"第四章测试","number":3,"type":"multi","score":2,"question":"构成产权的要素有（　）","options":{"A":"所有权","B":"占有权","C":"处置权","D":"收益权"},"answer":"ABCD"},{"chapter":"第四章测试","number":4,"type":"multi","score":2,"question":"公司治理的组织制度坚持（　）分离的原则。","options":{"A":"决策权","B":"执行权","C":"监督权","D":"收益权"},"answer":"ABC"},{"chapter":"第四章测试","number":5,"type":"single","score":2,"question":"（　）是公司的最高权力机构。","options":{"A":"董事会","B":"公司总裁","C":"监事会","D":"股东大会"},"answer":"D"},{"chapter":"第四章测试","number":6,"type":"judge","score":2,"question":"实行政企分开，建立企业与政府之间的适应社会主义市场经济体制的新型的政企关系，要求在明晰企业产权的基础上，实行政府对企业的直接管理。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第四章测试","number":7,"type":"judge","score":2,"question":"公司制是现代企业制度的主要组织形式，因此，一般认为现代企业的组织形式就是公司制。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第四章测试","number":8,"type":"judge","score":2,"question":"企业拥有法人财产权，以全部法人财产独立享有民事权利、承担民事责任，依法自主经营。企业以独立的法人财产对其经营活动负责，以其全部资产对企业债务承担责任。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第四章测试","number":9,"type":"judge","score":2,"question":"设置监事会的意义在于维护公司职工的利益。监事会对股东大会负责，向股东大会报告工作。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第四章测试","number":10,"type":"judge","score":2,"question":"公司治理结构是一种据以对工商公司进行管理和控制的体系。公司治理结构明确规定了公司的各个参与者的责任和权利分布。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第五章测试","number":1,"type":"multi","score":2,"question":"企业文化就是企业在长期的生存和发展过程中所形成的、为企业多数成员所共同遵循的（　）。","options":{"A":"经营观念","B":"价值观体系","C":"决策方法","D":"战略目标"},"answer":"AB"},{"chapter":"第五章测试","number":2,"type":"single","score":2,"question":"企业文化的核心是（　）。","options":{"A":"企业使命","B":"发展愿景","C":"企业战略","D":"企业价值观"},"answer":"D"},{"chapter":"第五章测试","number":3,"type":"multi","score":2,"question":"企业文化的结构应包括（　）","options":{"A":"物质层","B":"行为层","C":"制度层","D":"观念层"},"answer":"ABCD"},{"chapter":"第五章测试","number":4,"type":"single","score":2,"question":"（　）的行为决定了企业文化的健康与优化的程度，决定了员工对企业的信心程度，也决定了企业在未来竞争中的胜负。","options":{"A":"广大员工","B":"公司的竞争性行为","C":"企业家","D":"优秀员工"},"answer":"C"},{"chapter":"第五章测试","number":5,"type":"multi","score":2,"question":"企业文化的观念层是现代企业文化的核心层，指企业在生产经营中形成的独具本企业特征的意识形态和文化观念。它包括（　）等。","options":{"A":"企业精神","B":"企业价值观","C":"企业理念","D":"企业伦理"},"answer":"ABCD"},{"chapter":"第五章测试","number":6,"type":"judge","score":2,"question":"美国企业管理较为注重诸如技术、设备、制度、方法、组织结构等“硬”因素的分析，而日本企业则更多地强调人、目标、信念、价值观等“软”因素。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第五章测试","number":7,"type":"judge","score":2,"question":"企业文化通过建立共同的价值观和寻找观念共同点，不断强化企业成员之间的合作、信任和团结，使之产生亲近感、信任感和归属感，实现文化的认同和融合。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第五章测试","number":8,"type":"judge","score":2,"question":"企业文化是存在于广大员工心目中的核心价值观念，从这一点看，企业文化是提炼出来的，并不总是客观存在的。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第五章测试","number":9,"type":"judge","score":2,"question":"企业制度文化是企业为实现自身目标对员工的行为给予一定限制的文化，它具有共性和强有力的行为规范的要求。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第五章测试","number":10,"type":"judge","score":2,"question":"企业文化的约束功能是通过制度文化和道德规范发生作用的。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第六章测试","number":1,"type":"multi","score":2,"question":"关于战略的构成要素不同的学者有不同的见解。一般认为，企业战略主要包括以下（　）要素。","options":{"A":"经营范围","B":"资源配置","C":"竞争优势","D":"协同作用"},"answer":"ABCD"},{"chapter":"第六章测试","number":2,"type":"multi","score":2,"question":"一个完整的战略管理过程大体可分解为三个阶段，即（　）。","options":{"A":"战略分析阶段","B":"战略选择及评价阶段","C":"战略运营阶段","D":"战略实施及控制阶段"},"answer":"ABD"},{"chapter":"第六章测试","number":3,"type":"multi","score":2,"question":"企业的环境可分为（　）。","options":{"A":"宏观环境","B":"行业环境","C":"竞争环境","D":"内部环境"},"answer":"ABCD"},{"chapter":"第六章测试","number":4,"type":"multi","score":2,"question":"企业进入一个行业的可能性大小主要是由以下两个因素决定的（　）。","options":{"A":"公司高层的思想","B":"来自行业内企业采取报复行动的预期","C":"进入障碍","D":"员工是否适应新的行业"},"answer":"BC"},{"chapter":"第六章测试","number":5,"type":"multi","score":2,"question":"从公司战略所要解决的确定企业的经营范围，即确定企业是在一个领域还是在多个领域中经营出发，我们可以把公司战略分成两类（　）。","options":{"A":"集中化战略","B":"专业化战略","C":"差异化战略","D":"多元化战略"},"answer":"BD"},{"chapter":"第六章测试","number":6,"type":"judge","score":2,"question":"企业战略是以企业未来为基点，为寻求和维持持久竞争优势做出的有关全局的重大筹划和谋略。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第六章测试","number":7,"type":"judge","score":2,"question":"每一种核心竞争力都是能力，但并非每一种能力都是核心竞争力。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第六章测试","number":8,"type":"judge","score":2,"question":"差异化战略往往给企业带来相应的竞争优势，因此，追求差异化的企业一般不会遇到经营风险。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第六章测试","number":9,"type":"judge","score":2,"question":"成本领先竞争战略的核心是使企业的产品成本比竞争对手的产品成本低，也就是在追求产量规模经济效益的基础上降低成本，使企业在行业内保持成本的领先优势。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第六章测试","number":10,"type":"judge","score":2,"question":"集中化战略便于集中使用整个企业的力量和资源，更好地服务于某一特定的目标。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第七章测试","number":1,"type":"multi","score":2,"question":"指导企业营销活动的观念包括（　）","options":{"A":"生产观念","B":"产品观念","C":"推销观念","D":"市场营销观念","E":"社会营销观念"},"answer":"ABCDE"},{"chapter":"第七章测试","number":2,"type":"multi","score":2,"question":"选择目标市场的模式包括（　）","options":{"A":"单一的市场集中化","B":"选择性专业化","C":"产品专业化","D":"市场专业化","E":"全面进入"},"answer":"ABCDE"},{"chapter":"第七章测试","number":3,"type":"multi","score":2,"question":"市场定位的方式包括（　）","options":{"A":"对抗定位","B":"避强定位","C":"反向定位","D":"正向定位","E":"领先定位"},"answer":"ABC"},{"chapter":"第七章测试","number":4,"type":"multi","score":2,"question":"市场营销组合决策包括（　）","options":{"A":"产品决策","B":"产量决策","C":"定价决策","D":"渠道决策","E":"促销决策"},"answer":"ACDE"},{"chapter":"第七章测试","number":5,"type":"multi","score":2,"question":"常用的产品定价方法包括（　）","options":{"A":"成本加成定价法","B":"目标利润定价法","C":"认知定价法","D":"价值定价法","E":"随行就市定价法"},"answer":"ABCDE"},{"chapter":"第七章测试","number":6,"type":"judge","score":2,"question":"市场营销首先要满足顾客需求，通过满足顾客的需求实现个人或者组织目标。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第七章测试","number":7,"type":"judge","score":2,"question":"市场专业化就是企业同时向几个细分市场提供一种产品。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第七章测试","number":8,"type":"judge","score":2,"question":"快速渗透策略就是以低价格高促销水平的方式推出新产品。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第七章测试","number":9,"type":"judge","score":2,"question":"价值定价法就是根据产品的内在价值进行定价，产品质量越高定价越高。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第七章测试","number":10,"type":"judge","score":2,"question":"市场细分就是根据不同标准把整体市场分割成不同或相同的小市场群。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第十章测试","number":1,"type":"multi","score":2,"question":"质量成本是指当生产的产品不是合格时，由于产品质量而增加到生产中的全部成本。质量成本一般分为如下四类:（　）","options":{"A":"鉴定成本","B":"制造成本","C":"预防成本","D":"内部故障成本","E":"外部故障成本","F":"采购成本"},"answer":"ACDE"},{"chapter":"第十章测试","number":2,"type":"multi","score":2,"question":"广义的质量概念包括如下四个方面:（　）","options":{"A":"产品质量","B":"工程质量","C":"工作质量","D":"环境质量","E":"检测质量"},"answer":"ABCD"},{"chapter":"第十章测试","number":3,"type":"single","score":2,"question":"根据PDCA循环，拟定措施、制定计划主要是发生在（　）阶段。","options":{"A":"计划","B":"实施","C":"检查","D":"处理"},"answer":"A"},{"chapter":"第十章测试","number":4,"type":"multi","score":2,"question":"影响工作质量的因素主要包括五个方面:（　）","options":{"A":"操作者","B":"设备","C":"材料","D":"工艺方法","E":"环境"},"answer":"ABCDE"},{"chapter":"第十章测试","number":5,"type":"multi","score":2,"question":"全面质量保证体系，主要包括如下三个方面:（　）","options":{"A":"设计试制过程的质量保证","B":"制造过程的质量保证","C":"采购过程的质量保障","D":"使用过程的质量保证"},"answer":"ABD"},{"chapter":"第十章测试","number":6,"type":"multi","score":2,"question":"排列图又称巴雷特图，由意大利经济学家巴雷特发现了“关键的少数和次要的多数”规律并绘制成图。美国质量管理专家朱兰将其应用于质量管理。影响产品质量的主要因素的判断标准为:（　）","options":{"A":"累计百分数在0%一80%之间的因素为A类因素，为影响质量的主要因素","B":"累计百分数在81%一90%之间的因素为B类因素，是次要因素","C":"累计百分数在91%一100%之间的因素为C类因素，这一区间的因素是一般的质量影响因素。"},"answer":"ABC"},{"chapter":"第十章测试","number":7,"type":"judge","score":2,"question":"质量标准是把反映产品质量主要特性的技术参数或经济指标明确规定下来所形成的技术文件，具有社会法律作用的标准，产品符合这些标准，则为合格品，否则为不合格品、次品或废品。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第十章测试","number":8,"type":"judge","score":2,"question":"全面质量管理认为:“质量是设计出来的，不是检查出来的。”影响质量好坏的真正原因，不在于检验，而在于设计和制造。设计质量是先天性的，决定质量的等级或水平，制造实现设计质量，所以制造质量非常关键。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第十章测试","number":9,"type":"judge","score":2,"question":"质量保证体系活动的全过程是按照计划(Plan)、实施(Do)、检查(Check)、处理(Action)四个阶段不停地周而复始运转的。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第十章测试","number":10,"type":"judge","score":2,"question":"质量管理小组(QC小组)，是开展群众性质量活动的组织，是以保证、提高产品质量、工作质量为目的，围绕生产现场中存在的质量问题，职工自愿组织、相互启发，运用质量管理手段，不断地、主动地开展质量管理活动的小组。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第十章测试","number":11,"type":"judge","score":2,"question":"质量是通过一定数量界限表现出来的。常用的质量控制统计工具有七种，分别是直方图法、控制图法、排列图法、因果分析图法、相关图法、分层法和统计分析表法。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第十一章测试","number":1,"type":"multi","score":2,"question":"财务管理的目标包括（　）","options":{"A":"利润最大化","B":"收入最大化","C":"成本最小化","D":"股东财富最大化"},"answer":"AD"},{"chapter":"第十一章测试","number":2,"type":"multi","score":2,"question":"长期筹资的方式包括（　）","options":{"A":"股票筹资","B":"票据贴现","C":"债券筹资","D":"融资租赁","E":"投入资本筹资"},"answer":"ACDE"},{"chapter":"第十一章测试","number":3,"type":"multi","score":2,"question":"短期偿债能力分析主要指标包括（　）","options":{"A":"资产负债率","B":"流动比率","C":"速动比率","D":"现金比率","E":"现金流量比率"},"answer":"BCDE"},{"chapter":"第十一章测试","number":4,"type":"multi","score":2,"question":"影响应收账款周转率的因素包括（　）","options":{"A":"赊销收入净额","B":"应收账款平均余额","C":"销售成本","D":"销售收入"},"answer":"AB"},{"chapter":"第十一章测试","number":5,"type":"multi","score":2,"question":"影响项目净现值的因素包括（　）","options":{"A":"基准折现率","B":"净现金流","C":"固定资产折旧","D":"项目周期"},"answer":"ABD"},{"chapter":"第十一章测试","number":6,"type":"judge","score":2,"question":"资本成本是企业筹集和使用资本而付出的代价。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第十一章测试","number":7,"type":"judge","score":2,"question":"在其他条件相同的情况下，企业所得税税率越高，长期借款的资本成本越高。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第十一章测试","number":8,"type":"judge","score":2,"question":"内部收益率就是使投资项目的净现值等于零时的折现率。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第十一章测试","number":9,"type":"judge","score":2,"question":"股东权益比率和权益乘数呈倒数关系。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第十一章测试","number":10,"type":"judge","score":2,"question":"企业的财务关系就是企业与其所有者和债权人之间发生的经济关系。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第十二章测试","number":1,"type":"multi","score":2,"question":"人力资源，是指能够推动整个经济和社会发展的劳动者的能力，包括能够进行（　）的能力。","options":{"A":"创新活动","B":"生产活动","C":"体力劳动","D":"智力劳动"},"answer":"CD"},{"chapter":"第十二章测试","number":2,"type":"multi","score":2,"question":"人力资源管理最重要的工作就是在适当的时间，把适当的人选安排在适当的工作岗位上，充分发挥人的主观能动性，使得（　）。","options":{"A":"人尽其才","B":"事得其人","C":"人事相宜","D":"效益最佳"},"answer":"ABC"},{"chapter":"第十二章测试","number":3,"type":"multi","score":2,"question":"工作分析是确定完成各项工作所需（　）的系统过程。","options":{"A":"资源","B":"责任","C":"知识","D":"技能"},"answer":"BCD"},{"chapter":"第十二章测试","number":4,"type":"multi","score":2,"question":"绩效考核是指收集、分析、评价和传递某一个人在其工作岗位上的（　）信息情况的过程。","options":{"A":"工作行为表现","B":"人际交往能力","C":"决策执行能力","D":"工作结果"},"answer":"AD"},{"chapter":"第十二章测试","number":5,"type":"single","score":2,"question":"（　）是政府机关、企事业单位的行政人员和技术人员所实行的按职务等级规定工资的制度。","options":{"A":"职务等级工资制","B":"年薪制","C":"结构工资制","D":"谈判工资制"},"answer":"A"},{"chapter":"第十二章测试","number":6,"type":"judge","score":2,"question":"人力资源的开发必须尊重其内在的规律性，以使人力资源的形成、开发、分配和使用处于一种动态平衡之中。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第十二章测试","number":7,"type":"judge","score":2,"question":"在人力资源招聘中要把握好一个原则：就是尽可能让每一个岗位都有相应的人，即便是这个人与岗位的匹配程度不高。","options":{"A":"正确","B":"错误"},"answer":"B"},{"chapter":"第十二章测试","number":8,"type":"judge","score":2,"question":"为了避免不必要的人际冲突，保证反馈过程的顺利进行和反馈结果的有效性，360度考核大多是以匿名的形式进行的。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第十二章测试","number":9,"type":"judge","score":2,"question":"一个完整的科学的员工培训体系包括培训需求分析、培训工作组织、培训内容、培训方法以及培训效果评估等五个方面。","options":{"A":"正确","B":"错误"},"answer":"A"},{"chapter":"第十二章测试","number":10,"type":"judge","score":2,"question":"薪酬制度是人力资源管理制度的核心，它是企业能否吸引、留住人才，能否充分调动员工积极性、创造性的关键所在。","options":{"A":"正确","B":"错误"},"answer":"A"}];
+BANK.forEach((q, i) => { q.id = i; });
+
+const CHAPTERS = [];
+BANK.forEach(q => { if (!CHAPTERS.includes(q.chapter)) CHAPTERS.push(q.chapter); });
+
+const TYPE_LABEL = { single: '单选题', multi: '多选题', judge: '判断题' };
+const STORAGE_SESSION = 'mgt_quiz_session_v1';
+const STORAGE_SETTINGS = 'mgt_quiz_settings_v1';
+const STORAGE_THEME = 'mgt_quiz_theme_v1';
+
+const state = {
+  selected: new Set(CHAPTERS),
+  mode: 'exam',
+  shuffleQuestions: false,
+  shuffleOptions: false,
+  session: null,
+  filter: 'all',
+  timerId: null,
+};
+
+const $ = id => document.getElementById(id);
+
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function prepareQuestion(q, order) {
+  const keys = order && order.length ? order : Object.keys(q.options);
+  const displayOptions = keys.map((key, i) => ({
+    label: String.fromCharCode(65 + i),
+    text: q.options[key],
+    key,
+  }));
+  const answer = q.answer.split('').map(key => {
+    const idx = keys.indexOf(key);
+    return idx >= 0 ? String.fromCharCode(65 + idx) : '';
+  }).filter(Boolean).sort().join('');
+  return { ...q, displayOptions, answer, optionOrder: keys };
+}
+
+function getQuestion(id) {
+  return prepareQuestion(BANK[id], state.session.optionOrders[id]);
+}
+
+function formatTime(totalSeconds) {
+  const s = Math.max(0, Math.floor(totalSeconds));
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  const pad = n => String(n).padStart(2, '0');
+  return h > 0 ? `${h}:${pad(m)}:${pad(sec)}` : `${pad(m)}:${pad(sec)}`;
+}
+
+function currentElapsed() {
+  const s = state.session;
+  if (!s) return 0;
+  return s.elapsed + Math.floor((Date.now() - s.startedAt) / 1000);
+}
+
+function toast(message) {
+  const el = $('toast');
+  el.textContent = message;
+  el.classList.add('show');
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+/* ---------- settings & theme ---------- */
+
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem(STORAGE_SETTINGS);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (Array.isArray(s.chapters)) {
+      const valid = s.chapters.filter(ch => CHAPTERS.includes(ch));
+      if (valid.length) state.selected = new Set(valid);
+    }
+    if (s.mode === 'practice' || s.mode === 'exam') state.mode = s.mode;
+    state.shuffleQuestions = !!s.shuffleQuestions;
+    state.shuffleOptions = !!s.shuffleOptions;
+  } catch (e) {}
+}
+
+function saveSettings() {
+  try {
+    localStorage.setItem(STORAGE_SETTINGS, JSON.stringify({
+      chapters: [...state.selected],
+      mode: state.mode,
+      shuffleQuestions: state.shuffleQuestions,
+      shuffleOptions: state.shuffleOptions,
+    }));
+  } catch (e) {}
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
+function initTheme() {
+  let theme = localStorage.getItem(STORAGE_THEME);
+  if (theme !== 'dark' && theme !== 'light') {
+    theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  applyTheme(theme);
+  $('themeBtn').addEventListener('click', () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem(STORAGE_THEME, next);
+  });
+}
+
+/* ---------- session storage ---------- */
+
+function saveSession() {
+  const s = state.session;
+  if (!s || s.submitted) return;
+  s.elapsed = currentElapsed();
+  s.startedAt = Date.now();
+  try {
+    localStorage.setItem(STORAGE_SESSION, JSON.stringify({
+      questionIds: s.questionIds,
+      optionOrders: s.optionOrders,
+      answers: s.answers,
+      revealed: s.revealed,
+      current: s.current,
+      mode: s.mode,
+      elapsed: s.elapsed,
+    }));
+  } catch (e) {}
+}
+
+function loadSavedSession() {
+  try {
+    const raw = localStorage.getItem(STORAGE_SESSION);
+    if (!raw) return null;
+    const s = JSON.parse(raw);
+    if (!Array.isArray(s.questionIds) || !s.questionIds.length) return null;
+    if (s.questionIds.some(id => !BANK[id])) return null;
+    return s;
+  } catch (e) {
+    return null;
+  }
+}
+
+function refreshResumeUI() {
+  const saved = loadSavedSession();
+  const btn = $('resumeBtn');
+  const hint = $('savedHint');
+  if (!saved) {
+    btn.classList.add('hidden');
+    hint.classList.add('hidden');
+    return;
+  }
+  const answered = Object.values(saved.answers || {}).filter(a => Array.isArray(a) && a.length).length;
+  btn.classList.remove('hidden');
+  hint.textContent = `上次进度：第 ${(saved.current || 0) + 1} 题，已答 ${answered} 题，用时 ${formatTime(saved.elapsed || 0)}`;
+  hint.classList.remove('hidden');
+}
+
+/* ---------- setup screen ---------- */
+
+function renderChapters() {
+  const list = $('chapterList');
+  list.innerHTML = '';
+  CHAPTERS.forEach(ch => {
+    const count = BANK.filter(q => q.chapter === ch).length;
+    const item = document.createElement('label');
+    item.className = 'chapter-item' + (state.selected.has(ch) ? ' checked' : '');
+
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = state.selected.has(ch);
+    cb.addEventListener('change', () => {
+      if (cb.checked) state.selected.add(ch);
+      else state.selected.delete(ch);
+      item.classList.toggle('checked', cb.checked);
+      updateSetupStats();
+      saveSettings();
+    });
+
+    const name = document.createElement('span');
+    name.className = 'chapter-name';
+    name.textContent = ch.replace('测试', '');
+
+    const cnt = document.createElement('span');
+    cnt.className = 'chapter-count';
+    cnt.textContent = count + ' 题';
+
+    item.append(cb, name, cnt);
+    list.appendChild(item);
+  });
+}
+
+function updateSetupStats() {
+  const selectedQs = BANK.filter(q => state.selected.has(q.chapter));
+  $('bankTotal').textContent = BANK.length;
+  $('totalCount').textContent = selectedQs.length;
+  $('chapterCount').textContent = state.selected.size;
+  $('startBtn').disabled = selectedQs.length === 0;
+}
+
+function updateModeUI() {
+  document.querySelectorAll('#modeSwitch button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === state.mode);
+  });
+}
+
+function updateShuffleUI() {
+  $('shuffleQuestions').checked = state.shuffleQuestions;
+  $('shuffleOptions').checked = state.shuffleOptions;
+}
+
+/* ---------- screens ---------- */
+
+function showScreen(name) {
+  $('setupScreen').classList.toggle('active', name === 'setup');
+  $('quizScreen').classList.toggle('active', name === 'quiz');
+  $('resultScreen').classList.toggle('active', name === 'result');
+  $('timer').classList.toggle('hidden', name !== 'quiz');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ---------- session control ---------- */
+
+function startSessionWithIds(ids, mode) {
+  if (!ids || !ids.length) {
+    toast('没有可练习的题目');
+    return;
+  }
+  const optionOrders = {};
+  ids.forEach(id => {
+    const keys = Object.keys(BANK[id].options);
+    if (state.shuffleOptions) shuffleArray(keys);
+    optionOrders[id] = keys;
+  });
+  state.session = {
+    questionIds: [...ids],
+    optionOrders,
+    answers: {},
+    revealed: {},
+    current: 0,
+    mode: mode || state.mode,
+    elapsed: 0,
+    startedAt: Date.now(),
+    submitted: false,
+    result: null,
+  };
+  state.mode = state.session.mode;
+  updateModeUI();
+  showScreen('quiz');
+  renderQuiz();
+  startTimer();
+  saveSession();
+  saveSettings();
+}
+
+function startSession() {
+  const selectedQs = BANK.filter(q => state.selected.has(q.chapter));
+  if (!selectedQs.length) {
+    toast('请至少选择一个章节');
+    return;
+  }
+  let ids = selectedQs.map(q => q.id);
+  if (state.shuffleQuestions) shuffleArray(ids);
+  startSessionWithIds(ids, state.mode);
+}
+
+function resumeSession() {
+  const saved = loadSavedSession();
+  if (!saved) {
+    refreshResumeUI();
+    return;
+  }
+  state.session = {
+    questionIds: saved.questionIds,
+    optionOrders: saved.optionOrders || {},
+    answers: saved.answers || {},
+    revealed: saved.revealed || {},
+    current: Math.min(saved.current || 0, saved.questionIds.length - 1),
+    mode: saved.mode === 'practice' ? 'practice' : 'exam',
+    elapsed: saved.elapsed || 0,
+    startedAt: Date.now(),
+    submitted: false,
+    result: null,
+  };
+  state.mode = state.session.mode;
+  updateModeUI();
+  showScreen('quiz');
+  renderQuiz();
+  startTimer();
+}
+
+/* ---------- timer ---------- */
+
+function startTimer() {
+  stopTimer();
+  const tick = () => {
+    if (!state.session) return;
+    $('timer').textContent = formatTime(currentElapsed());
+  };
+  tick();
+  state.timerId = setInterval(tick, 1000);
+}
+
+function stopTimer() {
+  if (state.timerId) {
+    clearInterval(state.timerId);
+    state.timerId = null;
+  }
+}
+
+/* ---------- quiz rendering ---------- */
+
+function renderQuiz() {
+  const s = state.session;
+  if (!s) return;
+  const id = s.questionIds[s.current];
+  const q = getQuestion(id);
+  const user = s.answers[id] || [];
+  const revealed = s.mode === 'practice' && !!s.revealed[id];
+
+  $('currentNo').textContent = s.current + 1;
+  $('activeTotal').textContent = s.questionIds.length;
+  $('progressBar').style.width = ((s.current + 1) / s.questionIds.length * 100) + '%';
+
+  $('qChapter').textContent = q.chapter.replace('测试', '');
+  $('qType').textContent = TYPE_LABEL[q.type] || '题目';
+  $('qScore').textContent = q.score + '分';
+  $('qText').textContent = q.question;
+
+  const optionList = $('optionList');
+  optionList.innerHTML = '';
+  q.displayOptions.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'option';
+    const isSelected = user.includes(opt.label);
+    const isCorrect = q.answer.includes(opt.label);
+    if (isSelected) btn.classList.add('selected');
+    if (revealed && isCorrect) btn.classList.add('correct');
+    if (revealed && isSelected && !isCorrect) btn.classList.add('wrong');
+    if (revealed) btn.classList.add('locked');
+
+    const label = document.createElement('span');
+    label.className = 'option-label';
+    label.textContent = opt.label;
+
+    const text = document.createElement('span');
+    text.className = 'option-text';
+    text.textContent = opt.text;
+
+    btn.append(label, text);
+
+    if (revealed && (isCorrect || isSelected)) {
+      const mark = document.createElement('span');
+      mark.className = 'option-mark';
+      mark.textContent = isCorrect ? '正确答案' : '你的选择';
+      btn.appendChild(mark);
+    }
+
+    btn.addEventListener('click', () => selectOption(opt.label));
+    optionList.appendChild(btn);
+  });
+
+  const feedback = $('feedback');
+  feedback.className = 'feedback hidden';
+  if (revealed) {
+    const correct = user.join('') === q.answer;
+    feedback.classList.remove('hidden');
+    feedback.classList.add(correct ? 'ok' : 'bad');
+    feedback.textContent = correct
+      ? '回答正确'
+      : `回答错误，正确答案：${answerBrief(q)}`;
+  }
+
+  $('prevBtn').disabled = s.current === 0;
+  const isLast = s.current === s.questionIds.length - 1;
+  $('nextBtn').textContent = isLast ? '最后一题' : '下一题';
+  $('nextBtn').disabled = isLast;
+  $('checkBtn').classList.toggle('hidden', !(s.mode === 'practice' && q.type === 'multi' && !revealed && user.length > 0));
+
+  const answeredCount = s.questionIds.filter(qid => (s.answers[qid] || []).length > 0).length;
+  $('answeredCount').textContent = `已答 ${answeredCount} / ${s.questionIds.length}`;
+
+  renderPalette();
+}
+
+function answerBrief(q) {
+  return q.answer.split('').map(label => {
+    const opt = q.displayOptions.find(o => o.label === label);
+    return opt ? `${label}（${opt.text}）` : label;
+  }).join(' ');
+}
+
+function renderPalette() {
+  const s = state.session;
+  const palette = $('palette');
+  palette.innerHTML = '';
+  s.questionIds.forEach((id, idx) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'palette-btn';
+    btn.textContent = idx + 1;
+    const answered = (s.answers[id] || []).length > 0;
+    if (answered) btn.classList.add('answered');
+    if (idx === s.current) btn.classList.add('current');
+    if (s.mode === 'practice' && s.revealed[id]) {
+      const q = getQuestion(id);
+      const ok = (s.answers[id] || []).join('') === q.answer;
+      btn.classList.add(ok ? 'correct' : 'wrong');
+    }
+    btn.addEventListener('click', () => {
+      s.current = idx;
+      saveSession();
+      renderQuiz();
+    });
+    palette.appendChild(btn);
+  });
+}
+
+/* ---------- answering ---------- */
+
+function selectOption(label) {
+  const s = state.session;
+  if (!s) return;
+  const id = s.questionIds[s.current];
+  const q = getQuestion(id);
+  const revealed = s.mode === 'practice' && !!s.revealed[id];
+  if (revealed) return;
+
+  let current = s.answers[id] ? [...s.answers[id]] : [];
+  if (q.type === 'multi') {
+    const idx = current.indexOf(label);
+    if (idx >= 0) current.splice(idx, 1);
+    else current.push(label);
+    current.sort();
+  } else {
+    current = [label];
+  }
+  s.answers[id] = current;
+
+  if (s.mode === 'practice' && q.type !== 'multi') {
+    s.revealed[id] = true;
+  }
+  saveSession();
+  renderQuiz();
+}
+
+function checkCurrent() {
+  const s = state.session;
+  if (!s) return;
+  const id = s.questionIds[s.current];
+  if (!(s.answers[id] || []).length) {
+    toast('请先选择答案');
+    return;
+  }
+  s.revealed[id] = true;
+  saveSession();
+  renderQuiz();
+}
+
+function go(delta) {
+  const s = state.session;
+  if (!s) return;
+  const next = s.current + delta;
+  if (next < 0 || next >= s.questionIds.length) return;
+  s.current = next;
+  saveSession();
+  renderQuiz();
+}
+
+/* ---------- submit & result ---------- */
+
+function submitQuiz(skipConfirm) {
+  const s = state.session;
+  if (!s || s.submitted) return;
+  const unanswered = s.questionIds.filter(id => !(s.answers[id] || []).length).length;
+  if (!skipConfirm) {
+    const message = unanswered > 0
+      ? `还有 ${unanswered} 道题未作答，确定交卷吗？`
+      : '确定交卷并查看成绩吗？';
+    if (!window.confirm(message)) return;
+  }
+
+  s.elapsed = currentElapsed();
+  s.submitted = true;
+  stopTimer();
+
+  const results = s.questionIds.map(id => {
+    const q = getQuestion(id);
+    const user = s.answers[id] || [];
+    return {
+      id,
+      q,
+      user,
+      answered: user.length > 0,
+      correct: user.join('') === q.answer,
+    };
+  });
+  const correctCount = results.filter(r => r.correct).length;
+  const answeredCount = results.filter(r => r.answered).length;
+  const total = results.length;
+  const score = correctCount * 2;
+  const totalScore = total * 2;
+  s.result = {
+    results,
+    correctCount,
+    answeredCount,
+    total,
+    score,
+    totalScore,
+    elapsed: s.elapsed,
+    rate: totalScore ? Math.round(score / totalScore * 100) : 0,
+  };
+
+  try { localStorage.removeItem(STORAGE_SESSION); } catch (e) {}
+
+  state.filter = 'all';
+  document.querySelectorAll('#filterBar button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === 'all');
+  });
+
+  showScreen('result');
+  renderResult();
+}
+
+function renderResult() {
+  const s = state.session;
+  if (!s || !s.result) return;
+  const r = s.result;
+
+  $('scoreValue').textContent = r.score;
+  $('scoreRing').style.setProperty('--pct', r.rate);
+  $('resultTitle').textContent =
+    r.rate >= 90 ? '太棒了，掌握得很好！' :
+    r.rate >= 75 ? '不错，继续加油！' :
+    r.rate >= 60 ? '及格了，还需巩固' :
+    '再复习一下，下次会更好';
+  $('resultSub').textContent = `共 ${r.total} 题 · 满分 ${r.totalScore} 分 · 用时 ${formatTime(r.elapsed)}`;
+  $('statCorrect').textContent = r.correctCount;
+  $('statWrong').textContent = r.answeredCount - r.correctCount;
+  $('statUnanswered').textContent = r.total - r.answeredCount;
+  $('statRate').textContent = r.rate + '%';
+
+  renderReview();
+}
+
+function renderReview() {
+  const s = state.session;
+  if (!s || !s.result) return;
+  const list = $('reviewList');
+  list.innerHTML = '';
+
+  let items = s.result.results;
+  if (state.filter === 'wrong') items = items.filter(x => x.answered && !x.correct);
+  if (state.filter === 'unanswered') items = items.filter(x => !x.answered);
+
+  if (!items.length) {
+    const empty = document.createElement('div');
+    empty.className = 'empty card';
+    empty.textContent = state.filter === 'wrong' ? '没有错题，表现很棒！' :
+      state.filter === 'unanswered' ? '没有未作答的题目。' : '暂无题目。';
+    list.appendChild(empty);
+    return;
+  }
+
+  items.forEach(item => {
+    const q = item.q;
+    const card = document.createElement('article');
+    card.className = 'review-item ' + (item.correct ? 'correct' : item.answered ? 'wrong' : 'unanswered');
+
+    const head = document.createElement('div');
+    head.className = 'review-head';
+
+    const chapter = document.createElement('span');
+    chapter.className = 'badge';
+    chapter.textContent = q.chapter.replace('测试', '');
+    const type = document.createElement('span');
+    type.className = 'badge type';
+    type.textContent = TYPE_LABEL[q.type] || '题目';
+    const status = document.createElement('span');
+    status.className = 'status-badge ' + (item.correct ? 'correct' : item.answered ? 'wrong' : 'unanswered');
+    status.textContent = item.correct ? '答对' : item.answered ? '答错' : '未答';
+
+    head.append(chapter, type, status);
+
+    const question = document.createElement('div');
+    question.className = 'review-q';
+    question.textContent = q.question;
+
+    const options = document.createElement('div');
+    options.className = 'review-options';
+    q.displayOptions.forEach(opt => {
+      const row = document.createElement('div');
+      row.className = 'review-option';
+      const isCorrect = q.answer.includes(opt.label);
+      const isUser = item.user.includes(opt.label);
+      if (isCorrect) row.classList.add('correct');
+      if (isUser && !isCorrect) row.classList.add('wrong');
+
+      const label = document.createElement('span');
+      label.className = 'opt-label';
+      label.textContent = opt.label + '.';
+      const text = document.createElement('span');
+      text.textContent = opt.text;
+      row.append(label, text);
+      options.appendChild(row);
+    });
+
+    const answer = document.createElement('div');
+    answer.className = 'review-answer';
+    const userText = item.answered ? answerBrief({ ...q, answer: item.user.join('') }) : '未作答';
+    const correctText = answerBrief(q);
+    const userPart = document.createElement('span');
+    userPart.innerHTML = '你的答案：<strong></strong>';
+    userPart.querySelector('strong').textContent = userText;
+    const correctPart = document.createElement('span');
+    correctPart.innerHTML = '正确答案：<strong></strong>';
+    correctPart.querySelector('strong').textContent = correctText;
+    answer.append(userPart, correctPart);
+
+    card.append(head, question, options, answer);
+    list.appendChild(card);
+  });
+}
+
+/* ---------- events ---------- */
+
+function bindEvents() {
+  $('selectAll').addEventListener('click', () => {
+    state.selected = new Set(CHAPTERS);
+    renderChapters();
+    updateSetupStats();
+    saveSettings();
+  });
+  $('selectNone').addEventListener('click', () => {
+    state.selected = new Set();
+    renderChapters();
+    updateSetupStats();
+    saveSettings();
+  });
+
+  document.querySelectorAll('#modeSwitch button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.mode = btn.dataset.mode;
+      updateModeUI();
+      saveSettings();
+    });
+  });
+
+  $('shuffleQuestions').addEventListener('change', e => {
+    state.shuffleQuestions = e.target.checked;
+    saveSettings();
+  });
+  $('shuffleOptions').addEventListener('change', e => {
+    state.shuffleOptions = e.target.checked;
+    saveSettings();
+  });
+
+  $('startBtn').addEventListener('click', startSession);
+  $('resumeBtn').addEventListener('click', resumeSession);
+  $('backBtn').addEventListener('click', () => {
+    saveSession();
+    stopTimer();
+    showScreen('setup');
+    refreshResumeUI();
+  });
+  $('submitBtn').addEventListener('click', () => submitQuiz(false));
+  $('prevBtn').addEventListener('click', () => go(-1));
+  $('nextBtn').addEventListener('click', () => go(1));
+  $('checkBtn').addEventListener('click', checkCurrent);
+
+  document.querySelectorAll('#filterBar button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.filter = btn.dataset.filter;
+      document.querySelectorAll('#filterBar button').forEach(b => {
+        b.classList.toggle('active', b === btn);
+      });
+      renderReview();
+    });
+  });
+
+  $('retryBtn').addEventListener('click', () => {
+    startSession();
+  });
+  $('wrongBtn').addEventListener('click', () => {
+    const s = state.session;
+    if (!s || !s.result) return;
+    const ids = s.result.results.filter(r => r.answered && !r.correct).map(r => r.id);
+    if (!ids.length) {
+      toast('没有错题，无需重练');
+      return;
+    }
+    startSessionWithIds(ids, 'practice');
+  });
+  $('homeBtn').addEventListener('click', () => {
+    stopTimer();
+    showScreen('setup');
+    refreshResumeUI();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (!$('quizScreen').classList.contains('active')) return;
+    if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+    const s = state.session;
+    if (!s) return;
+    const q = getQuestion(s.questionIds[s.current]);
+
+    const key = e.key.toUpperCase();
+    if (/^[A-F]$/.test(key)) {
+      const opt = q.displayOptions.find(o => o.label === key);
+      if (opt) {
+        e.preventDefault();
+        selectOption(opt.label);
+      }
+      return;
+    }
+    if (/^[1-6]$/.test(e.key)) {
+      const opt = q.displayOptions[Number(e.key) - 1];
+      if (opt) {
+        e.preventDefault();
+        selectOption(opt.label);
+      }
+      return;
+    }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      go(-1);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      go(1);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (s.current < s.questionIds.length - 1) go(1);
+    }
+  });
+}
+
+function init() {
+  loadSettings();
+  initTheme();
+  renderChapters();
+  updateSetupStats();
+  updateModeUI();
+  updateShuffleUI();
+  bindEvents();
+  refreshResumeUI();
+}
+
+init();
+</script>
+</body>
+</html>
